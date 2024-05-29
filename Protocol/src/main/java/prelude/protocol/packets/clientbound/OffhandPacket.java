@@ -1,9 +1,13 @@
 package prelude.protocol.packets.clientbound;
 
 import lombok.Builder;
-import prelude.protocol.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientPacketManager;
+import prelude.protocol.PacketManager;
+import prelude.protocol.ProcessedResult;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Builder
 public class OffhandPacket extends ClientBoundPacket {
@@ -28,6 +32,21 @@ public class OffhandPacket extends ClientBoundPacket {
                         .replace("%item_id%", itemId)
                         .replace("%enchanted%", String.valueOf(enchanted))
                 );
+    }
+
+    @Override
+    public ProcessedResult processPacket(ClientPacketManager manager) {
+        return null;
+    }
+
+    @Override
+    public ClientBoundPacket createNewInstanceWithData(String data) {
+        return null;
+    }
+
+    @Override
+    public Pattern getPattern() {
+        return null;
     }
 
     @Override

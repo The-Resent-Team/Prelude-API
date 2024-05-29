@@ -119,10 +119,6 @@ public final class Adapter_1_16_5 implements VersionAdapter {
                 return;
             }
 
-            if (event.getPlayer().getInventory().getItemInMainHand().getType() != Material.GLOWSTONE) {
-                return;
-            }
-
             Optional<AnchorRenderer> mod = Prelude.getInstance().getMod(AnchorRenderer.class);
 
             if (!mod.isPresent() || !mod.get().isAllowed() || !mod.get().isOfficiallyHooked()) {
@@ -135,12 +131,14 @@ public final class Adapter_1_16_5 implements VersionAdapter {
 
             int charges = ((RespawnAnchor) event.getClickedBlock().getBlockData()).getCharges();
 
-            if (charges == 3) {
+            if (charges == ((RespawnAnchor) event.getClickedBlock().getBlockData()).getMaximumCharges()) {
                 mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), x, y, z);
                 return;
             }
 
-            mod.get().sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), x, y, z, charges + 1);
+            if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLOWSTONE)
+                mod.get().sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(
+                        plugin, event.getPlayer()), x, y, z, charges + 1);
         }
     }
 

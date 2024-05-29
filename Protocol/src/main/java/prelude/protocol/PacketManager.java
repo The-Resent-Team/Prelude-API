@@ -1,23 +1,22 @@
 package prelude.protocol;
 
-import prelude.protocol.processedresults.PreludePlayerInfo;
+import prelude.protocol.packets.client.ClientBoundPacketHandler;
+import prelude.protocol.packets.clientbound.*;
+import prelude.protocol.packets.serverbound.ClientHandshakePacket;
+import prelude.protocol.server.ServerBoundPacket;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class PacketManager {
+    public static Set<ClientBoundPacketHandler> clientBoundPackets = new HashSet<>();
+    public static Set<ServerBoundPacket> serverBoundPackets = new HashSet<>();
 
-    protected static Set<ServerBoundPacket> serverBoundPackets = new HashSet<>();
+    static {
+        // Register SERVER-BOUND packets
+        new ClientHandshakePacket();
 
-    public abstract ProcessedResult processHandshakeInfo(PreludePlayerInfo info);
-
-    public static ServerBoundPacket getInboundPacketFromString(String string) {
-        for (ServerBoundPacket packet : serverBoundPackets) {
-            if (packet.getPattern().matcher(string.trim().toLowerCase()).matches()) {
-                return packet.createNewInstanceWithData(string);
-            }
-        }
-
-        return null;
+        // CLIENT-BOUND packet handlers are registered on the Client side,
+        // since they require access to Resent Client internals.
     }
 }

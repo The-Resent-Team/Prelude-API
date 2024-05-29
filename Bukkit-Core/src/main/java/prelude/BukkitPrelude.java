@@ -8,6 +8,7 @@ import prelude.adapter.BukkitPlayerAdapter;
 import prelude.api.Prelude;
 import prelude.api.PreludePlayer;
 import prelude.api.ResentMod;
+import prelude.protocol.packets.clientbound.ServerHandshakePacket;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ public final class BukkitPrelude extends Prelude {
 
     public BukkitPrelude() {
         setInstance(this);
-        setPacketManager(new BukkitPacketManager());
+        setServerPacketManager(new BukkitPacketManager());
     }
 
     @Override
@@ -41,6 +42,10 @@ public final class BukkitPrelude extends Prelude {
     @Override
     public void validateConnection(PreludePlayer preludePlayer) {
         //Player player = Bukkit.getPlayer(preludePlayer.getUuid());
+
+
+//        TODO
+//        ServerHandshakePacket pkt = ServerHandshakePacket.builder().majorVersion().build()
 
         PreludePlugin.getInstance().debug("Validating mods for " + preludePlayer);
         for (ResentMod mod : mods) {

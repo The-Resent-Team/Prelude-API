@@ -3,15 +3,18 @@ package prelude.protocol.packets.serverbound;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import prelude.protocol.PacketManager;
 import prelude.protocol.ProcessedResult;
-import prelude.protocol.ServerBoundPacket;
-import prelude.protocol.processedresults.PreludePlayerInfo;
+import prelude.protocol.server.ServerBoundPacket;
+import prelude.protocol.server.ServerPacketManager;
+import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public final class HandshakePacket extends ServerBoundPacket {
+@Getter
+public final class ClientHandshakePacket extends ServerBoundPacket {
     public static final String HANDSHAKE_PACKET_FORMAT =
             "{" +
                     "\"username\":\"%username%\"," +
@@ -25,8 +28,8 @@ public final class HandshakePacket extends ServerBoundPacket {
     public static final String HANDSHAKE_PACKET_REGEX =
             "\\{" +
                     "\"username\":\".+\"," +
-                    "\"resent-version\":\".+\"," +
-                    "\"patch-num\":\".+\"," +
+                    "\"resent-version\":\"\\d+\\.\\d+\"," +
+                    "\"patch-num\":\"\\d+\"," +
                     "\"client-type\":\".+\"," +
                     "\"is-ranked-player\":\".+\"," +
                     "\"enabled-mods\":\".+\"" +
@@ -34,7 +37,12 @@ public final class HandshakePacket extends ServerBoundPacket {
 
     private final PreludePlayerInfo preludePlayerInfo;
 
-    public HandshakePacket(String message) {
+    public ClientHandshakePacket() {
+        preludePlayerInfo = PreludePlayerInfo.UNKNOWN_INFO;
+        PacketManager.serverBoundPackets.add(this);
+    }
+
+    public ClientHandshakePacket(String message) {
         PreludePlayerInfo result;
 
         try {
@@ -56,36 +64,25 @@ public final class HandshakePacket extends ServerBoundPacket {
     }
 
     @Override
-    public ProcessedResult processPacket(PacketManager manager) {
-        return manager.processHandshakeInfo(preludePlayerInfo);
+    public ProcessedResult processPacket(ServerPacketManager manager) {
+        return manager.processClientHandshake(this);
     }
 
     @Override
-    protected HandshakePacket createNewInstanceWithData(String data) {
-        return new HandshakePacket(data);
+    public ClientHandshakePacket createNewInstanceWithData(String data) {
+        return new ClientHandshakePacket(data);
     }
 
     @Override
-    protected Pattern getPattern() {
+    public Pattern getPattern() {
         return Pattern.compile(HANDSHAKE_PACKET_REGEX, Pattern.CASE_INSENSITIVE);
-    }
-
-    @Override
-    public int hashCode() {
-        return preludePlayerInfo == null ? 0 : preludePlayerInfo.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return preludePlayerInfo == null ? "HandshakePacket:null" :
-                "HandshakePacket:" + preludePlayerInfo.toString().substring(17);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof HandshakePacket)) return false;
-        HandshakePacket that = (HandshakePacket) o;
+        if (!(o instanceof ClientHandshakePacket)) return false;
+        ClientHandshakePacket that = (ClientHandshakePacket) o;
         return Objects.equals(preludePlayerInfo, that.preludePlayerInfo);
     }
 }

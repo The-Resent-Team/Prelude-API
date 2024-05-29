@@ -1,11 +1,15 @@
 package prelude.protocol.packets.clientbound;
 
 import lombok.Builder;
-import prelude.protocol.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientPacketManager;
+import prelude.protocol.PacketManager;
+import prelude.protocol.ProcessedResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Builder
 public class WaypointsPacket extends ClientBoundPacket {
@@ -31,6 +35,21 @@ public class WaypointsPacket extends ClientBoundPacket {
         return GENERIC_PACKET_FORMAT
                 .replace("%receiver%", "waypoints-data")
                 .replace("%message%", b.toString());
+    }
+
+    @Override
+    public ProcessedResult processPacket(ClientPacketManager manager) {
+        return null;
+    }
+
+    @Override
+    public ClientBoundPacket createNewInstanceWithData(String data) {
+        return null;
+    }
+
+    @Override
+    public Pattern getPattern() {
+        return null;
     }
 
     @Override

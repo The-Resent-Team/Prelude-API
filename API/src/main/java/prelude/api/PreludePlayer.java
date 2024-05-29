@@ -1,8 +1,8 @@
 package prelude.api;
 
 import lombok.Getter;
-import prelude.protocol.ClientBoundPacket;
-import prelude.protocol.processedresults.PreludePlayerInfo;
+import prelude.protocol.packets.client.ClientBoundPacket;
+import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
 
 import java.util.UUID;
 

@@ -1,9 +1,13 @@
 package prelude.protocol.packets.clientbound;
 
 import lombok.Builder;
-import prelude.protocol.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientBoundPacket;
+import prelude.protocol.packets.client.ClientPacketManager;
+import prelude.protocol.PacketManager;
+import prelude.protocol.ProcessedResult;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Builder
 public class AnchorRendererPacket extends ClientBoundPacket {
@@ -13,6 +17,14 @@ public class AnchorRendererPacket extends ClientBoundPacket {
                     "\"y\":\"%y%\"," +
                     "\"z\":\"%z%\"," +
                     "\"charge\":\"%charge%\"" +
+            "}";
+
+    public static final String ANCHOR_RENDERER_PACKET_MESSAGE_REGEX =
+            "\\{" +
+                    "\"x\":\"\\d+\"," +
+                    "\"y\":\"\\d+\"," +
+                    "\"z\":\"\\d+\"," +
+                    "\"charge\":\"[0-5]\"" +
             "}";
 
     private int x;
@@ -32,6 +44,21 @@ public class AnchorRendererPacket extends ClientBoundPacket {
                                 .replace("%z%", Integer.toString(z))
                                 .replace("%charge%", Integer.toString(charge))
                 );
+    }
+
+    @Override
+    public ProcessedResult processPacket(ClientPacketManager manager) {
+        return null;
+    }
+
+    @Override
+    public ClientBoundPacket createNewInstanceWithData(String data) {
+        return null;
+    }
+
+    @Override
+    public Pattern getPattern() {
+        return Pattern.compile(ANCHOR_RENDERER_PACKET_MESSAGE_REGEX, Pattern.CASE_INSENSITIVE);
     }
 
     @Override

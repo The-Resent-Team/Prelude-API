@@ -1,8 +1,8 @@
-package prelude.protocol.processedresults;
+package prelude.protocol.processedresults.serverbound;
 
 import lombok.Getter;
 import prelude.protocol.ProcessedResult;
-import prelude.protocol.packets.serverbound.HandshakePacket;
+import prelude.protocol.packets.serverbound.ClientHandshakePacket;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public final class PreludePlayerInfo extends ProcessedResult {
 
     @Override
     public String toString() {
-        return "PreludePlayerInfo:" + HandshakePacket.HANDSHAKE_PACKET_FORMAT
+        return "PreludePlayerInfo:" + ClientHandshakePacket.HANDSHAKE_PACKET_FORMAT
                         .replace("%resVer%", resentVersion)
                         .replace("%patchNum%", resentPatchNum)
                         .replace("%clientType%", clientType)
