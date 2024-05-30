@@ -45,7 +45,7 @@ public final class PreludePlayerInfo extends ProcessedResult {
 
     @Override
     public String toString() {
-        return "PreludePlayerInfo:" + ClientHandshakePacket.HANDSHAKE_PACKET_FORMAT
+        return "PreludePlayerInfo:" + ClientHandshakePacket.CLIENT_HANDSHAKE_PACKET_FORMAT
                         .replace("%resVer%", resentVersion)
                         .replace("%patchNum%", resentPatchNum)
                         .replace("%clientType%", clientType)

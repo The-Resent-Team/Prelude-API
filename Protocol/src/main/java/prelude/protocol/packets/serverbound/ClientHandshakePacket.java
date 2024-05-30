@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 @Getter
 public final class ClientHandshakePacket extends ServerBoundPacket {
-    public static final String HANDSHAKE_PACKET_FORMAT =
+    public static final String CLIENT_HANDSHAKE_PACKET_FORMAT =
             "{" +
                     "\"username\":\"%username%\"," +
                     "\"resent-version\":\"%resVer%\"," +
@@ -25,7 +25,7 @@ public final class ClientHandshakePacket extends ServerBoundPacket {
                     "\"enabled-mods\":\"%modsOn%\"" +
             "}";
 
-    public static final String HANDSHAKE_PACKET_REGEX =
+    public static final String CLIENT_HANDSHAKE_PACKET_REGEX =
             "\\{" +
                     "\"username\":\".+\"," +
                     "\"resent-version\":\"\\d+\\.\\d+\"," +
@@ -75,7 +75,7 @@ public final class ClientHandshakePacket extends ServerBoundPacket {
 
     @Override
     public Pattern getPattern() {
-        return Pattern.compile(HANDSHAKE_PACKET_REGEX, Pattern.CASE_INSENSITIVE);
+        return Pattern.compile(CLIENT_HANDSHAKE_PACKET_REGEX, Pattern.CASE_INSENSITIVE);
     }
 
     @Override

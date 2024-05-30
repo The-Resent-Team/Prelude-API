@@ -11,6 +11,9 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public abstract class Prelude {
     public static final String CHANNEL = "resent:prelude";
+    public static final int MAJOR_VERSION = 1;
+    public static final int MINOR_VERSION = 0;
+    public static final int PATCH_VERSION = 0;
 
     /**
      * The API instance.
