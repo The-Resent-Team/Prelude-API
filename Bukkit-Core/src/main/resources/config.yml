@@ -1,4 +1,4 @@
-debug: false
+debug: true
 
 # If this is true ALL the built-in implementations for each mod will be ignored
 # Meaning that the hook AND allowed config from below will not do anything

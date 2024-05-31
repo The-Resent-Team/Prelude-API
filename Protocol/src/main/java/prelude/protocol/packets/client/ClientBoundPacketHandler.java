@@ -9,13 +9,9 @@ import java.util.regex.Pattern;
 public abstract class ClientBoundPacketHandler<E extends ClientBoundPacket> {
     protected final Pattern pattern;
 
-    protected ClientBoundPacketHandler(Pattern pattern) {
-        PacketManager.clientBoundPackets.add(this);
+    protected ClientBoundPacketHandler(String id, Pattern pattern) {
+        PacketManager.clientBoundPackets.put(id, this);
         this.pattern = pattern;
-    }
-
-    public boolean canHandlePacket(String packet) {
-        return pattern.matcher(packet).matches();
     }
 
     public abstract ProcessedResult handlePacket(E packet);

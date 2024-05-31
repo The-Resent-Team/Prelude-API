@@ -24,22 +24,21 @@ public class ServerHandshakePacket extends ClientBoundPacket {
                     "\"server-patch-version\":\"%server-patch-version%\"" +
             "}";
 
-    public static final String SERVER_HANDSHAKE_PACKET_REGEX =
-            "\\{" +
-                    "\"prelude-major-version\":\"\\d+\"," +
-                    "\"prelude-minor-version\":\"\\d+\"," +
-                    "\"prelude-patch-version\":\"\\d+\"," +
-                    "\"server-major-version\":\"\\d+\"," +
-                    "\"server-minor-version\":\"\\d+\"," +
-                    "\"server-patch-version\":\"\\d+\"" +
-            "}";
-
     private int preludeMajorVersion;
     private int preludeMinorVersion;
     private int preludePatchVersion;
     private int serverMajorVersion;
     private int serverMinorVersion;
     private int serverPatchVersion;
+
+    public ServerHandshakePacket(int preludeMajorVersion, int preludeMinorVersion, int preludePatchVersion, int serverMajorVersion, int serverMinorVersion, int serverPatchVersion) {
+        this.preludeMajorVersion = preludeMajorVersion;
+        this.preludeMinorVersion = preludeMinorVersion;
+        this.preludePatchVersion = preludePatchVersion;
+        this.serverMajorVersion = serverMajorVersion;
+        this.serverMinorVersion = serverMinorVersion;
+        this.serverPatchVersion = serverPatchVersion;
+    }
 
     public ServerHandshakePacket(String message) {
         try {
@@ -78,15 +77,12 @@ public class ServerHandshakePacket extends ClientBoundPacket {
     }
 
     @Override
-    public Pattern getPattern() {
-        return Pattern.compile(SERVER_HANDSHAKE_PACKET_REGEX, Pattern.CASE_INSENSITIVE);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ServerHandshakePacket)) return false;
         ServerHandshakePacket that = (ServerHandshakePacket) o;
-        return preludeMajorVersion == that.preludeMajorVersion && preludeMinorVersion == that.preludeMinorVersion && preludePatchVersion == that.preludePatchVersion;
+        return preludeMajorVersion == that.preludeMajorVersion && preludeMinorVersion == that.preludeMinorVersion &&
+                preludePatchVersion == that.preludePatchVersion && serverMajorVersion == that.serverMajorVersion &&
+                serverMinorVersion == that.serverMinorVersion && serverPatchVersion == that.serverPatchVersion;
     }
 }

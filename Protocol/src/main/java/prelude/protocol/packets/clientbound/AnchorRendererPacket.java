@@ -19,14 +19,6 @@ public class AnchorRendererPacket extends ClientBoundPacket {
                     "\"charge\":\"%charge%\"" +
             "}";
 
-    public static final String ANCHOR_RENDERER_PACKET_MESSAGE_REGEX =
-            "\\{" +
-                    "\"x\":\"\\d+\"," +
-                    "\"y\":\"\\d+\"," +
-                    "\"z\":\"\\d+\"," +
-                    "\"charge\":\"[0-5]\"" +
-            "}";
-
     private int x;
     private int y;
     private int z;
@@ -54,11 +46,6 @@ public class AnchorRendererPacket extends ClientBoundPacket {
     @Override
     public ClientBoundPacket createNewInstanceWithData(String data) {
         return null;
-    }
-
-    @Override
-    public Pattern getPattern() {
-        return Pattern.compile(ANCHOR_RENDERER_PACKET_MESSAGE_REGEX, Pattern.CASE_INSENSITIVE);
     }
 
     @Override

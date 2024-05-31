@@ -4,5 +4,5 @@ main: prelude.PreludePlugin
 api-version: '1.13'
 authors:
   - Preva1l
-  - Cire3
+  - cire3
 description: The API for Resent Client

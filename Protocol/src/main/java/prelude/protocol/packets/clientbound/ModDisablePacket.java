@@ -31,11 +31,6 @@ public class ModDisablePacket extends ClientBoundPacket {
     }
 
     @Override
-    public Pattern getPattern() {
-        return null;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ModDisablePacket)) return false;

@@ -7,14 +7,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.scheduler.BukkitRunnable;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
 import prelude.api.Prelude;
+import prelude.api.PreludePlayer;
 import prelude.mods.BukkitAnchorRenderer;
 import prelude.mods.BukkitOffHand;
 import prelude.mods.BukkitServerTps;
 import prelude.mods.BukkitTotemTweaks;
 import prelude.protocol.ProcessedResult;
+import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
 import prelude.protocol.server.ServerBoundPacket;
 import prelude.protocol.server.ServerPacketManager;
 
@@ -83,6 +86,17 @@ public final class BaseImplementation implements Listener {
                 });
             }
         }
+
+        // debug only
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.sendPluginMessage(plugin, "RESENT|PRELUDE", "RESENT|PRELUDE".getBytes());
+                    player.sendPluginMessage(plugin, Prelude.CHANNEL, Prelude.CHANNEL.getBytes());
+                }
+            }
+        }.runTaskTimer(plugin, 20, 0);
     }
 
     @EventHandler
@@ -94,7 +108,9 @@ public final class BaseImplementation implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        BukkitPrelude.getInstance().validateConnection(BukkitPlayerAdapter.getPreludePlayer(plugin, player));
+
+        BukkitPlayerAdapter.registerInfo(player.getName(), new PreludePlayerInfo(player.getName(),
+                "4.0", "5", "Release", false, new String[]{}));
     }
 
     private double[] getTPS() {

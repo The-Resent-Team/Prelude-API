@@ -10,11 +10,10 @@ public abstract class ClientPacketManager extends PacketManager {
     public abstract ProcessedResult processServerHandshake(ServerHandshakePacket packet);
 
     public static ClientBoundPacketHandler getClientBoundPacketHandlerFromString(String string) {
-        String message = JsonParser.parseString(string).getAsJsonObject().get("message").getAsString();
+        String receiver = JsonParser.parseString(string).getAsJsonObject().get("packet_receiver").getAsString();
 
-        for (ClientBoundPacketHandler handler : clientBoundPackets)
-            if (handler.canHandlePacket(message))
-                return handler;
+        if (clientBoundPackets.containsKey(receiver))
+            return clientBoundPackets.get(receiver);
 
         return null;
     }
