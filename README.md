@@ -2,7 +2,7 @@
 
 # Prelude API (Resent Clients API for servers)
 
-This API is the joint effort of `Preva1l` & `cire` at the request of `cire`
+This API is the joint effort of `Preva1l` & `cire`
 and is made to allow the EaglerCraft client Resent Client to have features not possible entirely on the client-side.
 
 
