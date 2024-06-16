@@ -131,14 +131,24 @@ public final class Adapter_1_16_5 implements VersionAdapter {
 
             int charges = ((RespawnAnchor) event.getClickedBlock().getBlockData()).getCharges();
 
+            // detect if the anchor is fully charged
+            // if anchor is fully charged, interacting at all
+            // will cause explosion
             if (charges == ((RespawnAnchor) event.getClickedBlock().getBlockData()).getMaximumCharges()) {
-                mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), x, y, z);
+                mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                        x, y, z);
                 return;
             }
 
-            if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLOWSTONE)
-                mod.get().sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(
-                        plugin, event.getPlayer()), x, y, z, charges + 1);
+            if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLOWSTONE) {
+                mod.get().sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                        x, y, z, charges + 1);
+            } else if (charges != 0) {
+                // it is charged, and they didnt interact with a glowstone block
+                // send blown up packet
+                mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                        x, y, z);
+            }
         }
     }
 
