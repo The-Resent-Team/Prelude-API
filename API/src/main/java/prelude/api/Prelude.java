@@ -2,7 +2,7 @@ package prelude.api;
 
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.jetbrains.annotations.ApiStatus;
-import prelude.protocol.server.ServerPacketManager;
+import prelude.protocol.C2SPacketHandler;
 
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +23,7 @@ public abstract class Prelude {
     /**
      * The PacketManager instance.
      */
-    private static ServerPacketManager serverPacketManager = null;
+    private static C2SPacketHandler serverPacketManager = null;
 
     /**
      * Get a prelude player from a UUID, the player who owns the UUID must be online
@@ -88,7 +88,7 @@ public abstract class Prelude {
      */
     @Immutable
     @ApiStatus.Internal
-    public static ServerPacketManager getServerPacketManager() {
+    public static C2SPacketHandler getServerPacketManager() {
         return serverPacketManager;
     }
 
@@ -109,7 +109,7 @@ public abstract class Prelude {
      * @throws IllegalStateException if the packet manager instance is already assigned
      */
     @ApiStatus.Internal
-    public static void setServerPacketManager(ServerPacketManager newPacketManager) {
+    public static void setServerPacketManager(C2SPacketHandler newPacketManager) {
         if (serverPacketManager != null) {
             throw new IllegalStateException("Packet Manager instance has already been set");
         }

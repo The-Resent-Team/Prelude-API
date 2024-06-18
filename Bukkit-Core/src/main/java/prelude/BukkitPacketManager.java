@@ -1,16 +1,22 @@
 package prelude;
 
 import prelude.adapter.BukkitPlayerAdapter;
-import prelude.protocol.ProcessedResult;
-import prelude.protocol.server.ServerPacketManager;
-import prelude.protocol.packets.serverbound.ClientHandshakePacket;
-import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
+import prelude.api.PreludePlayer;
+import prelude.protocol.C2SPacketHandler;
+import prelude.protocol.packets.c2s.ClientHandshakePacket;
+import prelude.protocol.packets.c2s.EquipOffhandPacket;
 
-public class BukkitPacketManager extends ServerPacketManager {
+public class BukkitPacketManager extends C2SPacketHandler {
     @Override
-    public ProcessedResult processClientHandshake(ClientHandshakePacket packet) {
-        PreludePlayerInfo info = packet.getPreludePlayerInfo();
-        BukkitPlayerAdapter.registerInfo(info.getUsername(), info);
-        return info;
+    public void handleClientHandshake(ClientHandshakePacket pkt) {
+        PreludePlayer.Info info = new PreludePlayer.Info(pkt.getUsername(), pkt.getResentMajorVersion(),
+                pkt.getResentMinorVersion(), pkt.getResentBuildInteger(), pkt.getClientType(), pkt.doesClientClaimSelfIsRankedPlayer(), pkt.getEnabledMods());
+
+        BukkitPlayerAdapter.registerInfo(info.username, info);
+    }
+
+    @Override
+    public void handleEquipOffhand(EquipOffhandPacket equipOffhandPacket) {
+        // TODO
     }
 }

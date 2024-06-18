@@ -3,20 +3,25 @@ package prelude.adapter.impl;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
-import prelude.api.mods.TotemTweaks;
+import prelude.api.mods.TotemUsedRenderer;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class Adapter_1_9 implements VersionAdapter {
     private final JavaPlugin plugin;
-    private final Map<Player, ItemStack> offhandItemMap = new HashMap<>();
 
     public Adapter_1_9(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -28,44 +33,39 @@ public final class Adapter_1_9 implements VersionAdapter {
     }
 
     @Override
-    public void registerTotemListener(TotemTweaks totemMod) {
+    public void registerTotemListener(TotemUsedRenderer totemMod) {
         // Do nothing
     }
 
     @Override
-    public Runnable getOffHandRunnable(OffHand offhandMod) {
-        // This is my solution for monitoring offhand items
-        // Cires was to track the ItemStacks client side, while this makes more sense,
-        // I think we should take as much stress off the client as possible
-        // if you come up with a better implementation please make a PR
-        return () -> {
-            if (!offhandMod.isAllowed() || !offhandMod.isOfficiallyHooked()) {
-                return;
-            }
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                ItemStack currentOffhand = player.getInventory().getItemInOffHand();
-                if (!offhandItemMap.containsKey(player)) {
-                    offhandItemMap.put(player, currentOffhand);
-                    continue;
-                }
-                ItemStack cachedOffhand = offhandItemMap.get(player);
-                if (cachedOffhand == currentOffhand) {
-                    continue;
-                }
-                offhandItemMap.replace(player, currentOffhand);
-                if (currentOffhand.getType() == Material.AIR) {
-                    offhandMod.sendOffhandUnEquipEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
-                            Material.AIR.name(), false);
-                } else {
-                    offhandMod.sendOffhandEquipEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
-                            currentOffhand.getType().name(), !currentOffhand.getEnchantments().isEmpty());
-                }
-            }
-        };
+    public void registerOffhandItemSwapListeners(OffHand offHandMod) {
+        plugin.getServer().getPluginManager().registerEvents(new OffhandListeners(offHandMod), plugin);
     }
 
     @Override
     public boolean hasOffHandSupport() {
         return true;
+    }
+
+    public class OffhandListeners implements Listener {
+        OffHand offHand;
+
+        public OffhandListeners(OffHand offHand) {
+            this.offHand = offHand;
+        }
+
+        /*
+        * This event is actually artificially fired by prelude when it receives
+        * an
+        * */
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onOffhandSwapViaKeybind(PlayerSwapHandItemsEvent event) throws IOException {
+            offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), event.getOffHandItem().toString(), true);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onInventoryDrag(InventoryDragEvent event) {
+
+        }
     }
 }

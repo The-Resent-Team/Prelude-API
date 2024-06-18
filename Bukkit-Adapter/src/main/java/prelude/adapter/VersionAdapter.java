@@ -2,7 +2,7 @@ package prelude.adapter;
 
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
-import prelude.api.mods.TotemTweaks;
+import prelude.api.mods.TotemUsedRenderer;
 
 
 public interface VersionAdapter {
@@ -17,13 +17,13 @@ public interface VersionAdapter {
      * Register the totem tweaks mod listeners
      * @param totemMod the instance of the mod to use
      */
-    void registerTotemListener(TotemTweaks totemMod);
+    void registerTotemListener(TotemUsedRenderer totemMod);
 
     /**
-     * Get the runnable for the offhand mod.
-     * @return Runnable
+     * Register the offhand mod listeners
+     * @param offHandMod the instance of the mod to use
      */
-    Runnable getOffHandRunnable(OffHand offhandMod);
+    void registerOffhandItemSwapListeners(OffHand offHandMod);
 
     /**
      * Check whether the adapter supports anchor renderer mod.
@@ -49,6 +49,15 @@ public interface VersionAdapter {
      * @apiNote OffHand is in MC Version 1.9+
      */
     default boolean hasOffHandSupport() {
+        return false;
+    }
+
+    /**
+     * Attempts to put the item in specified slot into the offhand, and the offhand into specified slot
+     * @return true if it succeeds
+     * @apiNote this will call an PlayerSwapHandItemsEvent
+     */
+    default boolean equipSlotToOffhand(int slot) {
         return false;
     }
 

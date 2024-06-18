@@ -1,5 +1,8 @@
 # Client Side Implementation Specs
 
+# THIS IS OUTDATED WITH THE NEW PROTOCOL
+### will update soon
+
 ## General
 - All packets are sent over the PluginMessage channels
 - All channels use the `resent:prelude` namespace

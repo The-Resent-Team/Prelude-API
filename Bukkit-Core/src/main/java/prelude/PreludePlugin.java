@@ -78,7 +78,7 @@ public final class PreludePlugin extends JavaPlugin {
         }
 
         new BukkitOffHand();
-        new BukkitTotemTweaks();
+        new BukkitTotemUsedRenderer();
         new BukkitFreeLook();
         new BukkitServerTps();
         new BukkitAnchorRenderer();

@@ -1,11 +1,9 @@
 package prelude.api;
 
 import lombok.Getter;
-import prelude.protocol.packets.clientbound.ModDisablePacket;
-import prelude.protocol.packets.clientbound.ModInitPacket;
+import prelude.protocol.packets.s2c.ModStatusPacket;
 
-import static prelude.protocol.packets.clientbound.ModDisablePacket.ModDisablePacketBuilder;
-import static prelude.protocol.packets.clientbound.ModInitPacket.ModInitPacketBuilder;
+import java.io.IOException;
 
 @Getter
 public abstract class ResentMod {
@@ -14,19 +12,21 @@ public abstract class ResentMod {
     protected ResentMod() {
     }
 
-    public void initMod(PreludePlayer preludePlayer) {
-        ModInitPacketBuilder builder = ModInitPacket.builder();
-
-        preludePlayer.sendPacket(builder.receiver(this.getReceiverId()).build());
+    public void initMod(PreludePlayer preludePlayer) throws IOException {
+        preludePlayer.sendPacket(ModStatusPacket.builder()
+                .modStatus(ModStatusPacket.ModStatus.SUPPORTED)
+                .modIdentifier(getModId())
+                .build());
     }
 
-    public void disableMod(PreludePlayer preludePlayer) {
-        ModDisablePacketBuilder builder = ModDisablePacket.builder();
-
-        preludePlayer.sendPacket(builder.receiver(this.getReceiverId()).build());
+    public void disableMod(PreludePlayer preludePlayer) throws IOException {
+        preludePlayer.sendPacket(ModStatusPacket.builder()
+                .modStatus(ModStatusPacket.ModStatus.DISABLE)
+                .modIdentifier(getModId())
+                .build());
     }
 
-    public abstract String getReceiverId();
+    public abstract String getModId();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isAllowed();

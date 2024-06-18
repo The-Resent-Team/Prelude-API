@@ -14,7 +14,7 @@ import prelude.adapter.VersionAdapter;
 import prelude.api.Prelude;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
-import prelude.api.mods.TotemTweaks;
+import prelude.api.mods.TotemUsedRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public final class Adapter_1_11 implements VersionAdapter {
     }
 
     @Override
-    public void registerTotemListener(TotemTweaks totemMod) {
+    public void registerTotemListener(TotemUsedRenderer totemMod) {
         plugin.getServer().getPluginManager().registerEvents(new TotemListeners(), plugin);
     }
 
@@ -75,7 +75,7 @@ public final class Adapter_1_11 implements VersionAdapter {
         public void onResurrectEvent(EntityResurrectEvent event) {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                Optional<TotemTweaks> mod = Prelude.getInstance().getMod(TotemTweaks.class);
+                Optional<TotemUsedRenderer> mod = Prelude.getInstance().getMod(TotemUsedRenderer.class);
                 if (!mod.isPresent() || !mod.get().isAllowed() || !mod.get().isOfficiallyHooked()) {
                     return;
                 }

@@ -15,8 +15,9 @@ import prelude.api.PreludePlayer;
 import prelude.mods.BukkitAnchorRenderer;
 import prelude.mods.BukkitOffHand;
 import prelude.mods.BukkitServerTps;
-import prelude.mods.BukkitTotemTweaks;
+import prelude.mods.BukkitTotemUsedRenderer;
 import prelude.protocol.ProcessedResult;
+import prelude.protocol.packets.c2s.ClientHandshakePacket;
 import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
 import prelude.protocol.server.ServerBoundPacket;
 import prelude.protocol.server.ServerPacketManager;
@@ -61,14 +62,13 @@ public final class BaseImplementation implements Listener {
                     if (!offHandMod.isOfficiallyHooked()) {
                         return;
                     }
-                    plugin.getServer().getScheduler()
-                            .runTaskTimerAsynchronously(plugin, adapter.getOffHandRunnable(offHandMod), 1L, 10L);
+                    adapter.registerOffhandItemSwapListeners(offHandMod);
                 });
             }
 
             // Totem mod
             if (adapter.hasTotemSupport()) {
-                Prelude.getInstance().getMod(BukkitTotemTweaks.class).ifPresent((totemMod) -> {
+                Prelude.getInstance().getMod(BukkitTotemUsedRenderer.class).ifPresent((totemMod) -> {
                     if (!totemMod.isOfficiallyHooked()) {
                         return;
                     }
@@ -109,8 +109,8 @@ public final class BaseImplementation implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        BukkitPlayerAdapter.registerInfo(player.getName(), new PreludePlayerInfo(player.getName(),
-                "4.0", "5", "Release", false, new String[]{}));
+        BukkitPlayerAdapter.registerInfo(player.getName(), new PreludePlayer.Info(player.getName(),
+                4, 5, 405, ClientHandshakePacket.ClientType.STABLE, false, new String[]{}));
     }
 
     private double[] getTPS() {

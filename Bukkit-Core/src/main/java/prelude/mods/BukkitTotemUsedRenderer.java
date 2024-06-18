@@ -3,11 +3,11 @@ package prelude.mods;
 import prelude.PreludePlugin;
 import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
-import prelude.api.mods.TotemTweaks;
+import prelude.api.mods.TotemUsedRenderer;
 
-public final class BukkitTotemTweaks extends TotemTweaks {
+public final class BukkitTotemUsedRenderer extends TotemUsedRenderer {
 
-    public BukkitTotemTweaks() {
+    public BukkitTotemUsedRenderer() {
         super();
         Prelude.getInstance().addMod(this);
 
