@@ -22,7 +22,7 @@ public final class BukkitPrelude extends Prelude {
 
     public BukkitPrelude() {
         setInstance(this);
-        setServerPacketManager(new BukkitPacketManager());
+        setC2SPacketHandler(new BukkitC2SPacketHandler());
     }
 
     @Override

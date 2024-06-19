@@ -49,7 +49,21 @@ public final class Adapter_1_9 implements VersionAdapter {
     }
 
     @Override
-    public boolean equipSlotToOffhand(PreludePlayer player, int slot) {
+    public boolean equipSlotToOffhand(Player player, int slot) {
+        if (player == null) return false;
+        try {
+            ItemStack attemptedItemToSwap = player.getOpenInventory().getItem(slot);
+            ItemStack offhand = player.getInventory().getItemInOffHand();
+
+            player.getInventory().setItemInOffHand(attemptedItemToSwap);
+            player.getOpenInventory().setItem(slot, offhand);
+
+            player.updateInventory();
+        } catch (Exception e) {
+            // most likely someone trying to abuse prelude into spamming console
+            return false;
+        }
+
         return true;
     }
 

@@ -1,12 +1,15 @@
 package prelude;
 
+import org.bukkit.entity.Player;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.api.PreludePlayer;
 import prelude.protocol.C2SPacketHandler;
 import prelude.protocol.packets.c2s.ClientHandshakePacket;
 import prelude.protocol.packets.c2s.EquipOffhandPacket;
 
-public class BukkitPacketManager extends C2SPacketHandler {
+public class BukkitC2SPacketHandler extends C2SPacketHandler {
+    private static Player activePlayer;
+
     @Override
     public void handleClientHandshake(ClientHandshakePacket pkt) {
         PreludePlayer.Info info = new PreludePlayer.Info(pkt.getUsername(), pkt.getResentMajorVersion(),
@@ -18,7 +21,11 @@ public class BukkitPacketManager extends C2SPacketHandler {
     @Override
     public void handleEquipOffhand(EquipOffhandPacket equipOffhandPacket) {
         if (PreludePlugin.getInstance().getAdapter().isPresent()) {
-            PreludePlugin.getInstance().getAdapter().get().equipSlotToOffhand(equipOffhandPacket)
+            PreludePlugin.getInstance().getAdapter().get().equipSlotToOffhand(activePlayer, equipOffhandPacket.getSlot());
         }
+    }
+
+    public static void bindPlayer(Player player) {
+        activePlayer = player;
     }
 }

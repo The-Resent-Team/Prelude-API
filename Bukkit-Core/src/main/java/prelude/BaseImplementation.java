@@ -97,7 +97,6 @@ public final class BaseImplementation implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.sendPluginMessage(plugin, "RESENT|PRELUDE", "RESENT|PRELUDE".getBytes());
                     player.sendPluginMessage(plugin, Prelude.CHANNEL, Prelude.CHANNEL.getBytes());
                 }
             }
@@ -140,7 +139,8 @@ public final class BaseImplementation implements Listener {
                 return;
             }
 
-            pkt.get().processSelf(C2SPacket.handler);
+            BukkitC2SPacketHandler.bindPlayer(player);
+            pkt.get().processSelf(Prelude.getC2SPacketHandler());
         }
     }
 

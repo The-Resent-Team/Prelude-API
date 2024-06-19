@@ -49,6 +49,25 @@ public final class Adapter_1_11 implements VersionAdapter {
         plugin.getServer().getPluginManager().registerEvents(new OffhandListeners(offHand), plugin);
     }
 
+    @Override
+    public boolean equipSlotToOffhand(Player player, int slot) {
+        if (player == null) return false;
+        try {
+            ItemStack attemptedItemToSwap = player.getOpenInventory().getItem(slot);
+            ItemStack offhand = player.getInventory().getItemInOffHand();
+
+            player.getInventory().setItemInOffHand(attemptedItemToSwap);
+            player.getOpenInventory().setItem(slot, offhand);
+
+            player.updateInventory();
+        } catch (Exception e) {
+            // most likely someone trying to abuse prelude into spamming console
+            return false;
+        }
+
+        return true;
+    }
+
     public class TotemListeners implements Listener {
         TotemUsedRenderer totemMod;
 

@@ -1,5 +1,6 @@
 package prelude.adapter;
 
+import org.bukkit.entity.Player;
 import prelude.api.PreludePlayer;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
@@ -58,7 +59,7 @@ public interface VersionAdapter {
      * @return true if it succeeds
      * @apiNote this will call an PlayerSwapHandItemsEvent
      */
-    default boolean equipSlotToOffhand(PreludePlayer player, int slot) {
+    default boolean equipSlotToOffhand(Player player, int slot) {
         return false;
     }
 
