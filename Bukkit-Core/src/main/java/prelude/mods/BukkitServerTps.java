@@ -5,6 +5,8 @@ import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.ServerTps;
 
+import java.io.IOException;
+
 public final class BukkitServerTps extends ServerTps {
 
     public BukkitServerTps() {
@@ -14,7 +16,7 @@ public final class BukkitServerTps extends ServerTps {
     }
 
     @Override
-    public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) {
+    public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
         super.sendServerTpsUpdate(preludePlayer, currentTps);
         PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer);
     }

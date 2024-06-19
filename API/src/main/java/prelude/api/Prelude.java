@@ -2,8 +2,10 @@ package prelude.api;
 
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.jetbrains.annotations.ApiStatus;
+import prelude.protocol.C2SPacket;
 import prelude.protocol.C2SPacketHandler;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -49,7 +51,7 @@ public abstract class Prelude {
      * Run checks on all mods to either send the disable or the init packet to the client
      * @param preludePlayer player to validate
      */
-    public abstract void validateConnection(PreludePlayer preludePlayer);
+    public abstract void validateConnection(PreludePlayer preludePlayer) throws IOException;
 
     /**
      * Get a ResentMod instance.
@@ -114,5 +116,6 @@ public abstract class Prelude {
             throw new IllegalStateException("Packet Manager instance has already been set");
         }
         serverPacketManager = newPacketManager;
+        C2SPacket.setHandler(newPacketManager);
     }
 }

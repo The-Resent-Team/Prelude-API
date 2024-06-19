@@ -10,7 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
@@ -20,9 +24,12 @@ import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public final class Adapter_1_16_5 implements VersionAdapter {
     private final JavaPlugin plugin;
@@ -34,70 +41,45 @@ public final class Adapter_1_16_5 implements VersionAdapter {
 
     @Override
     public void registerAnchorListener(AnchorRenderer anchorMod) {
-        plugin.getServer().getPluginManager().registerEvents(new Adapter_1_16_5.AnchorListeners(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new AnchorListeners(anchorMod), plugin);
     }
 
     @Override
     public void registerTotemListener(TotemUsedRenderer totemMod) {
-        plugin.getServer().getPluginManager().registerEvents(new Adapter_1_16_5.TotemListeners(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new TotemListeners(totemMod), plugin);
     }
 
     @Override
-    public Runnable getOffHandRunnable(OffHand offhandMod) {
-        // This is my solution for monitoring offhand items
-        // Cires was to track the ItemStacks client side, while this makes more sense,
-        // I think we should take as much stress off the client as possible
-        // if you come up with a better implementation please make a PR
-        return () -> {
-            if (!offhandMod.isAllowed() || !offhandMod.isOfficiallyHooked()) {
-                return;
-            }
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                ItemStack currentOffhand = player.getInventory().getItemInOffHand();
-                if (!offhandItemMap.containsKey(player)) {
-                    offhandItemMap.put(player, currentOffhand);
-                    continue;
-                }
-                ItemStack cachedOffhand = offhandItemMap.get(player);
-                if (cachedOffhand == currentOffhand) {
-                    continue;
-                }
-                offhandItemMap.replace(player, currentOffhand);
-                if (currentOffhand.getType().isAir()) {
-                    offhandMod.sendOffhandUnEquipEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
-                            Material.AIR.name(), false);
-                } else {
-                    offhandMod.sendOffhandEquipEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
-                            currentOffhand.getType().name(), !currentOffhand.getEnchantments().isEmpty());
-                }
-            }
-        };
+    public void registerOffhandListeners(OffHand offHandMod) {
+        plugin.getServer().getPluginManager().registerEvents(new OffhandListeners(offHandMod), plugin);
     }
 
     public class TotemListeners implements Listener {
+        TotemUsedRenderer totemMod;
+
+        public TotemListeners(TotemUsedRenderer totemMod) {
+            this.totemMod = totemMod;
+        }
+
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void onResurrectEvent(EntityResurrectEvent event) {
+        public void onResurrectEvent(EntityResurrectEvent event) throws IOException {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                Optional<TotemUsedRenderer> mod = Prelude.getInstance().getMod(TotemUsedRenderer.class);
-                if (!mod.isPresent() || !mod.get().isAllowed() || !mod.get().isOfficiallyHooked()) {
-                    return;
-                }
-                mod.get().sendTotemPoppedEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player));
+                totemMod.sendTotemPoppedEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player));
             }
         }
     }
 
     public class AnchorListeners implements Listener {
+        AnchorRenderer anchorMod;
+
+        public AnchorListeners(AnchorRenderer anchorMod) {
+            this.anchorMod = anchorMod;
+        }
+
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onAnchorPlace(BlockPlaceEvent event) {
+        public void onAnchorPlace(BlockPlaceEvent event) throws IOException {
             if (event.getBlockPlaced().getType() != Material.RESPAWN_ANCHOR) {
-                return;
-            }
-
-            Optional<AnchorRenderer> mod = Prelude.getInstance().getMod(AnchorRenderer.class);
-
-            if (!mod.isPresent() || !mod.get().isAllowed() || !mod.get().isOfficiallyHooked()) {
                 return;
             }
 
@@ -105,23 +87,17 @@ public final class Adapter_1_16_5 implements VersionAdapter {
             int y = event.getBlockPlaced().getY();
             int z = event.getBlockPlaced().getZ();
 
-            mod.get().sendPlacedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), x, y, z);
+            anchorMod.sendPlacedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()), x, y, z);
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onAnchorInteract(PlayerInteractEvent event) {
+        public void onAnchorInteract(PlayerInteractEvent event) throws IOException {
             if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                 return;
             }
 
             if (event.getClickedBlock() == null
                     || event.getClickedBlock().getType() != Material.RESPAWN_ANCHOR) {
-                return;
-            }
-
-            Optional<AnchorRenderer> mod = Prelude.getInstance().getMod(AnchorRenderer.class);
-
-            if (!mod.isPresent() || !mod.get().isAllowed() || !mod.get().isOfficiallyHooked()) {
                 return;
             }
 
@@ -135,21 +111,85 @@ public final class Adapter_1_16_5 implements VersionAdapter {
             // if anchor is fully charged, interacting at all
             // will cause explosion
             if (charges == ((RespawnAnchor) event.getClickedBlock().getBlockData()).getMaximumCharges()) {
-                mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                anchorMod.sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
                         x, y, z);
                 return;
             }
 
             if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLOWSTONE) {
-                mod.get().sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                anchorMod.sendInteractedAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
                         x, y, z, charges + 1);
             } else if (charges != 0) {
                 // it is charged, and they didnt interact with a glowstone block
                 // send blown up packet
-                mod.get().sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                anchorMod.sendBlownUpAnchorPacket(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
                         x, y, z);
             }
         }
+    }
+
+    public class OffhandListeners implements Listener {
+        OffHand offHand;
+        private Map<Player, ItemStack> playerToOffhand = new HashMap<>();
+
+        public OffhandListeners(OffHand offHand) {
+            this.offHand = offHand;
+        }
+
+        /*
+         * This event is actually artificially fired by prelude when it receives
+         * an
+         * */
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onOffhandSwapViaKeybind(PlayerSwapHandItemsEvent event) throws IOException {
+            offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+                    serialize(event.getOffHandItem()), true);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onInventoryDrag(InventoryDragEvent event) {
+            if (!(event.getWhoClicked() instanceof Player))
+                return;
+
+            Player player = (Player) event.getWhoClicked();
+
+            compareOffhandsNextTick(player);
+        }
+
+        @EventHandler(priority = EventPriority.NORMAL)
+        public void onInventoryClick(InventoryClickEvent event) {
+            if (!(event.getWhoClicked() instanceof Player))
+                return;
+
+            Player player = (Player) event.getWhoClicked();
+
+            if (event.getAction() == InventoryAction.CLONE_STACK || event.getAction() == InventoryAction.NOTHING)
+                return;
+
+            compareOffhandsNextTick(player);
+        }
+
+        private void compareOffhandsNextTick(Player player) {
+            playerToOffhand.put(player, player.getInventory().getItemInOffHand());
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                if (!Objects.equals(player.getInventory().getItemInOffHand(), playerToOffhand.get(player))) {
+                    try {
+                        offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
+                                serialize(player.getInventory().getItemInOffHand()), false);
+                    } catch (IOException e) {
+                        // this shouldn't actually be thrown, this is for safety purposes
+                        plugin.getLogger().log(Level.SEVERE, e.toString(), e);
+                    }
+                }
+
+                playerToOffhand.remove(player);
+            }, 1);
+        }
+    }
+
+    public static String serialize(ItemStack itemStack) {
+        return itemStack == null ? "ItemStack{NULL}" : itemStack.toString();
     }
 
     @Override

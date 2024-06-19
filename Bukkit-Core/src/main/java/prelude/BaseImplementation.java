@@ -16,13 +16,11 @@ import prelude.mods.BukkitAnchorRenderer;
 import prelude.mods.BukkitOffHand;
 import prelude.mods.BukkitServerTps;
 import prelude.mods.BukkitTotemUsedRenderer;
-import prelude.protocol.ProcessedResult;
+import prelude.protocol.C2SPacket;
 import prelude.protocol.packets.c2s.ClientHandshakePacket;
-import prelude.protocol.processedresults.serverbound.PreludePlayerInfo;
-import prelude.protocol.server.ServerBoundPacket;
-import prelude.protocol.server.ServerPacketManager;
 
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -30,9 +28,12 @@ import java.util.Optional;
  */
 public final class BaseImplementation implements Listener {
     private final PreludePlugin plugin;
+    private final TpsTimer timer;
 
     public BaseImplementation(PreludePlugin plugin) {
         this.plugin = plugin;
+        this.timer = new TpsTimer();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, timer, 1000, 50);
 
         Runnable tpsRunnable = () -> {
             Optional<BukkitServerTps> tpsMod = Prelude.getInstance().getMod(BukkitServerTps.class);
@@ -40,7 +41,12 @@ public final class BaseImplementation implements Listener {
                 return;
             }
             for (Player player : Bukkit.getOnlinePlayers()) {
-                tpsMod.get().sendServerTpsUpdate(BukkitPlayerAdapter.getPreludePlayer(plugin, player), getTPS()[0]);
+                try {
+                    tpsMod.get().sendServerTpsUpdate(BukkitPlayerAdapter.getPreludePlayer(plugin, player), timer.getAverageTPS());
+                } catch (IOException e) {
+                    plugin.debug("Failed to send TPS update to " + player.getName());
+                    plugin.debug(e.toString());
+                }
             }
         };
 
@@ -49,7 +55,6 @@ public final class BaseImplementation implements Listener {
                 plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, tpsRunnable, 1L, 20L);
             }
         });
-
 
         // Version Adapted Features
         Optional<VersionAdapter> adapterOptional = plugin.getAdapter();
@@ -62,7 +67,7 @@ public final class BaseImplementation implements Listener {
                     if (!offHandMod.isOfficiallyHooked()) {
                         return;
                     }
-                    adapter.registerOffhandItemSwapListeners(offHandMod);
+                    adapter.registerOffhandListeners(offHandMod);
                 });
             }
 
@@ -113,27 +118,7 @@ public final class BaseImplementation implements Listener {
                 4, 5, 405, ClientHandshakePacket.ClientType.STABLE, false, new String[]{}));
     }
 
-    private double[] getTPS() {
-        try {
-            Object minecraftServer = getMinecraftServer();
-            Field tpsField = minecraftServer.getClass().getDeclaredField("recentTps");
-            tpsField.setAccessible(true);
-            return (double[]) tpsField.get(minecraftServer);
-        } catch (Exception e) {
-            PreludePlugin.getInstance().debug(e.getMessage());
-            return new double[]{-1, -1, -1};
-        }
-    }
-
-    private Object getMinecraftServer() throws Exception {
-        Object craftServer = Bukkit.getServer();
-        Field consoleField = craftServer.getClass().getDeclaredField("console");
-        consoleField.setAccessible(true);
-        return consoleField.get(craftServer);
-    }
-
     public static class ResentClientMessageListener implements PluginMessageListener {
-
         @Override
         public void onPluginMessageReceived(String channel, Player player, byte[] message) {
             // dump
@@ -141,17 +126,60 @@ public final class BaseImplementation implements Listener {
             PreludePlugin.getInstance().debug("Player: {}".replace("{}", player.getName()));
             PreludePlugin.getInstance().debug("Message: {}".replace("{}", new String(message)));
 
-            ServerBoundPacket pkt = ServerPacketManager.getServerBoundPacketFromString(new String(message));
+            Optional<C2SPacket> pkt;
+            try {
+                pkt = C2SPacket.parsePacket(message);
+            } catch (Exception e) {
+                PreludePlugin.getInstance().debug("Failed to parse C2SPacket!");
+                PreludePlugin.getInstance().debug(e.toString());
+                return;
+            }
 
-            if (pkt == null) {
+            if (!pkt.isPresent()) {
                 PreludePlugin.getInstance().debug("Received message did not correspond to any packet!");
                 return;
             }
 
-            ProcessedResult result = pkt.processPacket(Prelude.getServerPacketManager());
-            if (result != null) {
-                // Do nothing
-            }
+            pkt.get().processSelf(C2SPacket.handler);
         }
     }
+
+    // --------------- BEGIN COPYING FROM ESSENTIALS ----------------
+
+    /*
+    * Copied from https://github.com/essentials/Essentials/blob/a2c43d822c66e617a84df9a8f074b9c3a3e32fae/Essentials/src/com/earth2me/essentials/EssentialsTimer.java
+    * */
+    private static class TpsTimer implements Runnable {
+        private transient long lastPoll = System.nanoTime();
+        private final LinkedList<Double> history = new LinkedList<>();
+
+        public TpsTimer() {
+            history.add(20d);
+        }
+
+        @Override
+        public void run() {
+            final long startTime = System.nanoTime();
+            long timeSpent = (startTime - lastPoll) / 1000;
+            if (timeSpent == 0)
+                timeSpent = 1;
+            if (history.size() > 10)
+                history.remove();
+            long tickInterval = 50;
+            double tps = tickInterval * 1000000.0 / timeSpent;
+            if (tps <= 21)
+                history.add(tps);
+            lastPoll = startTime;
+        }
+
+        public double getAverageTPS() {
+            double avg = 0;
+            for (Double f : history)
+                if (f != null)
+                    avg += f;
+            return avg / history.size();
+        }
+    }
+
+    // --------------- END COPYING FROM ESSENTIALS ----------------
 }

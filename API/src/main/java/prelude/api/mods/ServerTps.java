@@ -12,12 +12,12 @@ public abstract class ServerTps extends ResentMod {
     }
 
     public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
-        int floor = (int) Math.floor(currentTps);
-        int mantissaToFourDigits = (int) (Math.floor(currentTps * 10000) - floor * 10000);
+        int characteristic = (int) Math.floor(currentTps);
+        int mantissaToFourDigits = (int) (Math.floor(currentTps * 10000) - characteristic * 10000);
 
         preludePlayer.sendPacket(
                 ServerTpsPacket.builder()
-                        .characteristic((byte) floor)
+                        .characteristic((byte) characteristic)
                         .mantissa(mantissaToFourDigits)
                         .build()
         );

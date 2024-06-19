@@ -8,8 +8,8 @@ import prelude.adapter.BukkitPlayerAdapter;
 import prelude.api.Prelude;
 import prelude.api.PreludePlayer;
 import prelude.api.ResentMod;
-import prelude.protocol.packets.clientbound.ServerHandshakePacket;
 
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Optional;
@@ -40,7 +40,7 @@ public final class BukkitPrelude extends Prelude {
     }
 
     @Override
-    public void validateConnection(PreludePlayer preludePlayer) {
+    public void validateConnection(PreludePlayer preludePlayer) throws IOException {
         //Player player = Bukkit.getPlayer(preludePlayer.getUuid());
 
 

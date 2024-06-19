@@ -23,7 +23,7 @@ public interface VersionAdapter {
      * Register the offhand mod listeners
      * @param offHandMod the instance of the mod to use
      */
-    void registerOffhandItemSwapListeners(OffHand offHandMod);
+    void registerOffhandListeners(OffHand offHandMod);
 
     /**
      * Check whether the adapter supports anchor renderer mod.
