@@ -4,8 +4,8 @@ repositories {
 dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compileOnly 'com.google.code.gson:gson:2.11.0'
-    compileOnly files("${rootDir}/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
-    
+
+    implementation files("${rootDir}/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
 }
 
 shadowJar {

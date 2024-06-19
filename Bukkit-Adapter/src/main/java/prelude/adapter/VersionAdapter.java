@@ -1,5 +1,6 @@
 package prelude.adapter;
 
+import prelude.api.PreludePlayer;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
@@ -57,7 +58,7 @@ public interface VersionAdapter {
      * @return true if it succeeds
      * @apiNote this will call an PlayerSwapHandItemsEvent
      */
-    default boolean equipSlotToOffhand(int slot) {
+    default boolean equipSlotToOffhand(PreludePlayer player, int slot) {
         return false;
     }
 

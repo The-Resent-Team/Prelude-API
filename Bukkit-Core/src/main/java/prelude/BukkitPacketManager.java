@@ -17,6 +17,8 @@ public class BukkitPacketManager extends C2SPacketHandler {
 
     @Override
     public void handleEquipOffhand(EquipOffhandPacket equipOffhandPacket) {
-        // TODO
+        if (PreludePlugin.getInstance().getAdapter().isPresent()) {
+            PreludePlugin.getInstance().getAdapter().get().equipSlotToOffhand(equipOffhandPacket)
+        }
     }
 }

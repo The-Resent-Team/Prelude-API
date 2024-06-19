@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
+import prelude.api.PreludePlayer;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
@@ -45,6 +46,11 @@ public final class Adapter_1_9 implements VersionAdapter {
     @Override
     public void registerOffhandListeners(OffHand offHandMod) {
         plugin.getServer().getPluginManager().registerEvents(new OffhandListeners(offHandMod), plugin);
+    }
+
+    @Override
+    public boolean equipSlotToOffhand(PreludePlayer player, int slot) {
+        return true;
     }
 
     @Override

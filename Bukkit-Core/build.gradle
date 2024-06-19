@@ -8,8 +8,8 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly project(":Bukkit-Adapter")
     compileOnly project(":API")
-    compileOnly files("${rootDir}/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
 
+    implementation files("${rootDir}/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
     implementation project(":Bukkit-Adapter-1-9")
     implementation project(":Bukkit-Adapter-1-11")
     implementation project(":Bukkit-Adapter-1-16-5")
