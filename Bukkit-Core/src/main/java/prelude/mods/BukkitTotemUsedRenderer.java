@@ -5,6 +5,8 @@ import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.TotemUsedRenderer;
 
+import java.io.IOException;
+
 public final class BukkitTotemUsedRenderer extends TotemUsedRenderer {
 
     public BukkitTotemUsedRenderer() {
@@ -25,7 +27,7 @@ public final class BukkitTotemUsedRenderer extends TotemUsedRenderer {
     }
 
     @Override
-    public void sendTotemPoppedEvent(PreludePlayer preludePlayer) {
+    public void sendTotemPoppedEvent(PreludePlayer preludePlayer) throws IOException {
         super.sendTotemPoppedEvent(preludePlayer);
         PreludePlugin.getInstance().debug("Dispatched TotemPoppedEvent to " + preludePlayer);
     }

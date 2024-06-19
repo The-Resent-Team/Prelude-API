@@ -5,6 +5,8 @@ import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.OffHand;
 
+import java.io.IOException;
+
 public final class BukkitOffHand extends OffHand {
 
     public BukkitOffHand() {
@@ -25,14 +27,8 @@ public final class BukkitOffHand extends OffHand {
     }
 
     @Override
-    public void sendOffhandEquipEvent(PreludePlayer preludePlayer, String itemId, boolean enchanted) {
-        super.sendOffhandEquipEvent(preludePlayer, itemId, enchanted);
-        PreludePlugin.getInstance().debug("Dispatched OffhandEquipEvent to " + preludePlayer);
-    }
-
-    @Override
-    public void sendOffhandUnEquipEvent(PreludePlayer preludePlayer, String itemId, boolean enchanted) {
-        super.sendOffhandUnEquipEvent(preludePlayer, itemId, enchanted);
-        PreludePlugin.getInstance().debug("Dispatched OffhandEquipEvent to " + preludePlayer);
+    public void sendOffhandEvent(PreludePlayer preludePlayer, String serializedItem, boolean canClientIgnore) throws IOException {
+        super.sendOffhandEvent(preludePlayer, serializedItem, canClientIgnore);
+        PreludePlugin.getInstance().debug("Dispatched UpdateOffhandEvent to " + preludePlayer);
     }
 }

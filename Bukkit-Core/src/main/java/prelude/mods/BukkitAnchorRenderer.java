@@ -5,6 +5,8 @@ import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.AnchorRenderer;
 
+import java.io.IOException;
+
 public final class BukkitAnchorRenderer extends AnchorRenderer {
     public BukkitAnchorRenderer() {
         super();
@@ -24,13 +26,13 @@ public final class BukkitAnchorRenderer extends AnchorRenderer {
     }
 
     @Override
-    public void sendPlacedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z) {
+    public void sendPlacedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z) throws IOException {
         super.sendPlacedAnchorPacket(preludePlayer, x, y, z);
         PreludePlugin.getInstance().debug("Dispatched PlacedAnchorEvent to " + preludePlayer);
     }
 
     @Override
-    public void sendInteractedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z, int charge) {
+    public void sendInteractedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z, int charge) throws IOException {
         super.sendInteractedAnchorPacket(preludePlayer, x, y, z, charge);
         PreludePlugin.getInstance().debug("Dispatched InteractedAnchorEvent to " + preludePlayer);
     }
