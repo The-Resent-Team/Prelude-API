@@ -98,11 +98,6 @@ public final class BaseImplementation implements Listener {
         BukkitPlayerAdapter.remove(player);
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-    }
-
     public static class ResentClientMessageListener implements PluginMessageListener {
         @Override
         public void onPluginMessageReceived(String channel, Player player, byte[] message) {
