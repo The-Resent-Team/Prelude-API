@@ -20,13 +20,13 @@ public final class BukkitPlayerAdapter {
     };
 
     private static final Map<Player, PreludePlayer> map = new HashMap<>();
-    private static final Map<String, PreludePlayer.Info> info = new HashMap<>();
+    private static final Map<Player, PreludePlayer.Info> info = new HashMap<>();
 
     public static PreludePlayer adapt(VersionAdapter adapter, Player player) {
         if (map.containsKey(player))
             return map.get(player);
 
-        if (info.containsKey(player.getName().toLowerCase())) {
+        if (info.containsKey(player)) {
             PreludePlayer preludePlayer = new PreludePlayer(player.getName(), player.getUniqueId(), info.get(player.getName().toLowerCase())) {
                 @Override
                 public void sendPacket(S2CPacket packet) throws IOException {
@@ -35,7 +35,7 @@ public final class BukkitPlayerAdapter {
             };
 
             map.put(player, preludePlayer);
-            info.remove(player.getName().toLowerCase());
+            info.remove(player);
 
             return preludePlayer;
         }
@@ -43,11 +43,16 @@ public final class BukkitPlayerAdapter {
         return NON_RESENT_CLIENT_PLAYER;
     }
 
-    public static void registerInfo(String player, PreludePlayer.Info _info) {
-        info.put(player.toLowerCase().trim(), _info);
+    public static void registerInfo(Player player, PreludePlayer.Info _info) {
+        if (player == null)
+            return;
+
+        if (!map.containsKey(player))
+            info.put(player, _info);
     }
 
     public static void remove(Player player) {
         map.remove(player);
+        info.remove(player);
     }
 }

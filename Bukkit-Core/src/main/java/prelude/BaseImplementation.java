@@ -20,6 +20,8 @@ import prelude.protocol.C2SPacket;
 import prelude.protocol.packets.c2s.ClientHandshakePacket;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -94,7 +96,7 @@ public final class BaseImplementation implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.sendPluginMessage(plugin, Prelude.CHANNEL, Prelude.CHANNEL.getBytes());
+                    adapter.getMessageSender().sendPluginMessagePacket(player, Prelude.CHANNEL, "kewl".getBytes(StandardCharsets.US_ASCII));
                 }
             }
         }.runTaskTimer(plugin, 20, 0);
@@ -109,18 +111,13 @@ public final class BaseImplementation implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        BukkitPlayerAdapter.registerInfo(player.getName(), new PreludePlayer.Info(player.getName(),
-                4, 5, 405, ClientHandshakePacket.ClientType.STABLE, false, new String[]{}));
     }
 
     public static class ResentClientMessageListener implements PluginMessageListener {
         @Override
         public void onPluginMessageReceived(String channel, Player player, byte[] message) {
             // dump
-            PreludePlugin.getInstance().debug("Channel: {}".replace("{}", channel));
-            PreludePlugin.getInstance().debug("Player: {}".replace("{}", player.getName()));
-            PreludePlugin.getInstance().debug("Message: {}".replace("{}", new String(message)));
+            PreludePlugin.getInstance().debug("Message: {}".replace("{}", Arrays.toString(message)));
 
             Optional<C2SPacket> pkt;
             try {

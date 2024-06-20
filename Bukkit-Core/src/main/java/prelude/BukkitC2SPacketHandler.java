@@ -1,5 +1,6 @@
 package prelude;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.api.PreludePlayer;
@@ -15,7 +16,7 @@ public class BukkitC2SPacketHandler extends C2SPacketHandler {
         PreludePlayer.Info info = new PreludePlayer.Info(pkt.getUsername(), pkt.getResentMajorVersion(),
                 pkt.getResentMinorVersion(), pkt.getResentBuildInteger(), pkt.getClientType(), pkt.doesClientClaimSelfIsRankedPlayer(), pkt.getEnabledMods());
 
-        BukkitPlayerAdapter.registerInfo(info.username, info);
+        BukkitPlayerAdapter.registerInfo(Bukkit.getPlayer(info.username), info);
     }
 
     @Override
