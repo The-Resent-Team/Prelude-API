@@ -90,16 +90,6 @@ public final class BaseImplementation implements Listener {
                 adapter.registerAnchorListener(anchorMod);
             });
         }
-
-        // debug only
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    adapter.getMessageSender().sendPluginMessagePacket(player, Prelude.CHANNEL, "kewl".getBytes(StandardCharsets.US_ASCII));
-                }
-            }
-        }.runTaskTimer(plugin, 20, 0);
     }
 
     @EventHandler
@@ -116,8 +106,6 @@ public final class BaseImplementation implements Listener {
     public static class ResentClientMessageListener implements PluginMessageListener {
         @Override
         public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-            // dump
-            PreludePlugin.getInstance().debug("Message: {}".replace("{}", Arrays.toString(message)));
 
             Optional<C2SPacket> pkt;
             try {

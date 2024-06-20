@@ -1,6 +1,7 @@
 package prelude.mods;
 
 import prelude.PreludePlugin;
+import prelude.adapter.BukkitPlayerAdapter;
 import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.ServerTps;
@@ -18,7 +19,8 @@ public final class BukkitServerTps extends ServerTps {
     @Override
     public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
         super.sendServerTpsUpdate(preludePlayer, currentTps);
-        PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer.getUsername());
+        if (!BukkitPlayerAdapter.NON_RESENT_CLIENT_PLAYER.equals(preludePlayer))
+            PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer.getUsername());
     }
 
     @Override

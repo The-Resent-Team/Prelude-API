@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class BukkitPlayerAdapter {
-    private static final PreludePlayer NON_RESENT_CLIENT_PLAYER =
+    public static final PreludePlayer NON_RESENT_CLIENT_PLAYER =
             new PreludePlayer(null, null, PreludePlayer.Info.UNKNOWN_INFO) {
                 @Override
                 public void sendPacket(S2CPacket packet) {
