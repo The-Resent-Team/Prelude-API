@@ -6,6 +6,8 @@ import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
 
+import java.util.logging.Logger;
+
 
 public interface VersionAdapter {
 
@@ -68,5 +70,20 @@ public interface VersionAdapter {
      */
     default void sendPotionEffects() {
 
+    }
+
+    /**
+     * Returns the plugin message sender for this adapter
+     * @return plugin message sender
+     */
+    default AbstractBukkitPluginMessageSender getMessageSender() {
+        return BukkitPluginMessageSender.getInstance();
+    }
+
+    /**
+     * Initializes the BukkitPluginMessageSender for this adapter
+     */
+    default void initializeBukkitPluginMessageSender(Logger logger) {
+        new BukkitPluginMessageSender(logger);
     }
 }

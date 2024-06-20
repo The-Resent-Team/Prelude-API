@@ -42,7 +42,7 @@ public final class BaseImplementation implements Listener {
             }
             for (Player player : Bukkit.getOnlinePlayers()) {
                 try {
-                    tpsMod.get().sendServerTpsUpdate(BukkitPlayerAdapter.getPreludePlayer(plugin, player), timer.getAverageTPS());
+                    tpsMod.get().sendServerTpsUpdate(BukkitPlayerAdapter.adapt(plugin.getAdapter(), player), timer.getAverageTPS());
                 } catch (IOException e) {
                     plugin.debug("Failed to send TPS update to " + player.getName());
                     plugin.debug(e.toString());
@@ -57,39 +57,36 @@ public final class BaseImplementation implements Listener {
         });
 
         // Version Adapted Features
-        Optional<VersionAdapter> adapterOptional = plugin.getAdapter();
-        if (adapterOptional.isPresent()) {
-            VersionAdapter adapter = adapterOptional.get();
+        VersionAdapter adapter = plugin.getAdapter();
 
-            // Offhand mod
-            if (adapter.hasOffHandSupport()) {
-                Prelude.getInstance().getMod(BukkitOffHand.class).ifPresent((offHandMod) -> {
-                    if (!offHandMod.isOfficiallyHooked()) {
-                        return;
-                    }
-                    adapter.registerOffhandListeners(offHandMod);
-                });
-            }
+        // Offhand mod
+        if (adapter.hasOffHandSupport()) {
+            Prelude.getInstance().getMod(BukkitOffHand.class).ifPresent((offHandMod) -> {
+                if (!offHandMod.isOfficiallyHooked()) {
+                    return;
+                }
+                adapter.registerOffhandListeners(offHandMod);
+            });
+        }
 
-            // Totem mod
-            if (adapter.hasTotemSupport()) {
-                Prelude.getInstance().getMod(BukkitTotemUsedRenderer.class).ifPresent((totemMod) -> {
-                    if (!totemMod.isOfficiallyHooked()) {
-                        return;
-                    }
-                    adapter.registerTotemListener(totemMod);
-                });
-            }
+        // Totem mod
+        if (adapter.hasTotemSupport()) {
+            Prelude.getInstance().getMod(BukkitTotemUsedRenderer.class).ifPresent((totemMod) -> {
+                if (!totemMod.isOfficiallyHooked()) {
+                    return;
+                }
+                adapter.registerTotemListener(totemMod);
+            });
+        }
 
-            // Anchor mod
-            if (adapter.hasAnchorSupport()) {
-                Prelude.getInstance().getMod(BukkitAnchorRenderer.class).ifPresent((anchorMod) -> {
-                    if (!anchorMod.isOfficiallyHooked()) {
-                        return;
-                    }
-                    adapter.registerAnchorListener(anchorMod);
-                });
-            }
+        // Anchor mod
+        if (adapter.hasAnchorSupport()) {
+            Prelude.getInstance().getMod(BukkitAnchorRenderer.class).ifPresent((anchorMod) -> {
+                if (!anchorMod.isOfficiallyHooked()) {
+                    return;
+                }
+                adapter.registerAnchorListener(anchorMod);
+            });
         }
 
         // debug only

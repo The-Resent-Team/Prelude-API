@@ -36,7 +36,7 @@ public final class BukkitPrelude extends Prelude {
         if (player == null) {
             throw new IllegalStateException("An actor must be online! Attempted UUID: " + uuid.toString());
         }
-        return BukkitPlayerAdapter.getPreludePlayer(PreludePlugin.getInstance(), player);
+        return BukkitPlayerAdapter.adapt(PreludePlugin.getInstance().getAdapter(), player);
     }
 
     @Override

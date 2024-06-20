@@ -1,2 +1,4 @@
 rootProject.name = 'Prelude'
 include('API', 'Bukkit-Adapter', 'Bukkit-Adapter-1-16-5', 'Bukkit-Adapter-1-11', 'Bukkit-Adapter-1-9', 'Bukkit-Core')
+include 'Bukkit-Adapter-1-17'
+

@@ -1,12 +1,10 @@
 package prelude.adapter.impl;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -15,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
-import prelude.api.PreludePlayer;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
@@ -86,7 +83,7 @@ public final class Adapter_1_9 implements VersionAdapter {
         * */
         @EventHandler(priority = EventPriority.MONITOR)
         public void onOffhandSwapViaKeybind(PlayerSwapHandItemsEvent event) throws IOException {
-            offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+            offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_9.this, event.getPlayer()),
                     serialize(event.getOffHandItem()), true);
         }
 
@@ -119,7 +116,7 @@ public final class Adapter_1_9 implements VersionAdapter {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (!Objects.equals(player.getInventory().getItemInOffHand(), playerToOffhand.get(player))) {
                     try {
-                        offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
+                        offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_9.this, player),
                                 serialize(player.getInventory().getItemInOffHand()), false);
                     } catch (IOException e) {
                         // this shouldn't actually be thrown, this is for safety purposes

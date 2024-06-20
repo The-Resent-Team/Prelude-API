@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
-import prelude.api.Prelude;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.logging.Level;
 
 public final class Adapter_1_11 implements VersionAdapter {
@@ -79,7 +77,7 @@ public final class Adapter_1_11 implements VersionAdapter {
         public void onResurrectEvent(EntityResurrectEvent event) throws IOException {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                totemMod.sendTotemPoppedEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player));
+                totemMod.sendTotemPoppedEvent(BukkitPlayerAdapter.adapt(Adapter_1_11.this, player));
             }
         }
     }
@@ -98,7 +96,7 @@ public final class Adapter_1_11 implements VersionAdapter {
          * */
         @EventHandler(priority = EventPriority.MONITOR)
         public void onOffhandSwapViaKeybind(PlayerSwapHandItemsEvent event) throws IOException {
-            offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, event.getPlayer()),
+            offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_11.this, event.getPlayer()),
                     serialize(event.getOffHandItem()), true);
         }
 
@@ -131,7 +129,7 @@ public final class Adapter_1_11 implements VersionAdapter {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (!Objects.equals(player.getInventory().getItemInOffHand(), playerToOffhand.get(player))) {
                     try {
-                        offHand.sendOffhandEvent(BukkitPlayerAdapter.getPreludePlayer(plugin, player),
+                        offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_11.this, player),
                                 serialize(player.getInventory().getItemInOffHand()), false);
                     } catch (IOException e) {
                         // this shouldn't actually be thrown, this is for safety purposes

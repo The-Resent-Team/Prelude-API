@@ -13,6 +13,7 @@ dependencies {
     implementation project(":Bukkit-Adapter-1-9")
     implementation project(":Bukkit-Adapter-1-11")
     implementation project(":Bukkit-Adapter-1-16-5")
+    implementation project(":Bukkit-Adapter-1-17")
 
     testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:1.0.0'
     testImplementation project(":Bukkit-Adapter-1-9")

@@ -18,7 +18,7 @@ public final class BukkitServerTps extends ServerTps {
     @Override
     public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
         super.sendServerTpsUpdate(preludePlayer, currentTps);
-        PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer);
+        PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer.getUsername());
     }
 
     @Override
