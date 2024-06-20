@@ -46,6 +46,8 @@ public class BukkitPluginMessageSender_1_17 extends AbstractBukkitPluginMessageS
     private Method wrappedBufferMethod;
 
     public BukkitPluginMessageSender_1_17(Logger _logger) {
+        instance = this;
+
         logger = _logger;
 
         // Get the v1_X_Y from the end of the package name, e.g. v_1_7_R4 or v_1_12_R1

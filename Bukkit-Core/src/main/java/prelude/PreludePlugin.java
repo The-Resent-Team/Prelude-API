@@ -41,48 +41,44 @@ public final class PreludePlugin extends JavaPlugin {
         VersionUtil.BukkitVersion version = VersionUtil.getServerBukkitVersion();
         if (version.isUnknown()) {
             adapter = new UnknownVersionAdapter();
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
             getLogger().warning("Server is running an outdated version ({}) and does not fully support all features."
                     .replace("{}", version.toString()));
         }
 
         else if (version.equals(VersionUtil.v1_8_8_R01)) {
+            adapter = new UnknownVersionAdapter();
             getLogger().warning("Server is running an outdated version ({}) and does not fully support all features."
                     .replace("{}", version.toString()));
-            adapter = new UnknownVersionAdapter();
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
         }
 
         else if (version.isHigherThanOrEqualTo(VersionUtil.v1_9_R01) && version.isLowerThan(VersionUtil.v1_11_R01)) {
             adapter = new Adapter_1_9(this);
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
             getLogger().warning("Server is running an outdated version ({}) and does not fully support all features."
                     .replace("{}", version.toString()));
         }
 
         else if (version.isHigherThanOrEqualTo(VersionUtil.v1_11_R01) && version.isLowerThan(VersionUtil.v1_16_1_R01)) {
             adapter = new Adapter_1_11(this);
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
             getLogger().warning("Server is running an outdated version ({}) and does not fully support all features."
                     .replace("{}", version.toString()));
         }
 
         else if (version.isHigherThanOrEqualTo(VersionUtil.v1_16_1_R01) && version.isLowerThan(VersionUtil.v1_17_R01)) {
             adapter = new Adapter_1_16_5(this);
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
         }
 
         else if (version.isHigherThanOrEqualTo(VersionUtil.v1_17_R01)) {
             adapter = new Adapter_1_17(this);
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
         }
 
         else {
             adapter = new UnknownVersionAdapter();
-            adapter.initializeBukkitPluginMessageSender(this.getLogger());
+
             getLogger().warning("Server is running an outdated version ({}) and does not fully support all features."
                     .replace("{}", version.toString()));
         }
+
+        adapter.initializeBukkitPluginMessageSender(this.getLogger());
     }
 
     @Override
