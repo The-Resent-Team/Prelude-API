@@ -1,9 +1,29 @@
+/*
+ * Prelude-API is a plugin to implement features for the Client.
+ * Copyright (C) 2024 cire3, Preva1l
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package prelude.mods;
 
 import prelude.PreludePlugin;
 import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
 import prelude.api.mods.OffHand;
+
+import java.io.IOException;
 
 public final class BukkitOffHand extends OffHand {
 
@@ -25,14 +45,8 @@ public final class BukkitOffHand extends OffHand {
     }
 
     @Override
-    public void sendOffhandEquipEvent(PreludePlayer preludePlayer, String itemId, boolean enchanted) {
-        super.sendOffhandEquipEvent(preludePlayer, itemId, enchanted);
-        PreludePlugin.getInstance().debug("Dispatched OffhandEquipEvent to " + preludePlayer);
-    }
-
-    @Override
-    public void sendOffhandUnEquipEvent(PreludePlayer preludePlayer, String itemId, boolean enchanted) {
-        super.sendOffhandUnEquipEvent(preludePlayer, itemId, enchanted);
-        PreludePlugin.getInstance().debug("Dispatched OffhandEquipEvent to " + preludePlayer);
+    public void sendOffhandEvent(PreludePlayer preludePlayer, String serializedItem, boolean canClientIgnore) throws IOException {
+        super.sendOffhandEvent(preludePlayer, serializedItem, canClientIgnore);
+        PreludePlugin.getInstance().debug("Dispatched UpdateOffhandEvent to " + preludePlayer);
     }
 }

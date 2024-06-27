@@ -21,12 +21,13 @@ package prelude.mods;
 import prelude.PreludePlugin;
 import prelude.api.PreludePlayer;
 import prelude.api.Prelude;
-import prelude.api.mods.AnchorRenderer;
+import prelude.api.mods.TotemUsedRenderer;
 
 import java.io.IOException;
 
-public final class BukkitAnchorRenderer extends AnchorRenderer {
-    public BukkitAnchorRenderer() {
+public final class BukkitTotemUsedRenderer extends TotemUsedRenderer {
+
+    public BukkitTotemUsedRenderer() {
         super();
         Prelude.getInstance().addMod(this);
 
@@ -35,7 +36,7 @@ public final class BukkitAnchorRenderer extends AnchorRenderer {
 
     @Override
     public boolean isAllowed() {
-        return PreludePlugin.getInstance().getModConfig().getBoolean("anchor-renderer.allowed", true);
+        return PreludePlugin.getInstance().getModConfig().getBoolean("totem-tweaks.allowed", true);
     }
 
     @Override
@@ -44,14 +45,8 @@ public final class BukkitAnchorRenderer extends AnchorRenderer {
     }
 
     @Override
-    public void sendPlacedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z) throws IOException {
-        super.sendPlacedAnchorPacket(preludePlayer, x, y, z);
-        PreludePlugin.getInstance().debug("Dispatched PlacedAnchorEvent to " + preludePlayer);
-    }
-
-    @Override
-    public void sendInteractedAnchorPacket(PreludePlayer preludePlayer, int x, int y, int z, int charge) throws IOException {
-        super.sendInteractedAnchorPacket(preludePlayer, x, y, z, charge);
-        PreludePlugin.getInstance().debug("Dispatched InteractedAnchorEvent to " + preludePlayer);
+    public void sendTotemPoppedEvent(PreludePlayer preludePlayer) throws IOException {
+        super.sendTotemPoppedEvent(preludePlayer);
+        PreludePlugin.getInstance().debug("Dispatched TotemPoppedEvent to " + preludePlayer);
     }
 }

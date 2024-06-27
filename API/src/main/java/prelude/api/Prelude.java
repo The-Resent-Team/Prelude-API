@@ -1,9 +1,29 @@
+/*
+ * Prelude-API is a plugin to implement features for the Client.
+ * Copyright (C) 2024 cire3, Preva1l
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package prelude.api;
 
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.jetbrains.annotations.ApiStatus;
-import prelude.protocol.server.ServerPacketManager;
+import prelude.protocol.C2SPacket;
+import prelude.protocol.C2SPacketHandler;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +43,7 @@ public abstract class Prelude {
     /**
      * The PacketManager instance.
      */
-    private static ServerPacketManager serverPacketManager = null;
+    private static C2SPacketHandler c2SPacketHandler = null;
 
     /**
      * Get a prelude player from a UUID, the player who owns the UUID must be online
@@ -49,7 +69,7 @@ public abstract class Prelude {
      * Run checks on all mods to either send the disable or the init packet to the client
      * @param preludePlayer player to validate
      */
-    public abstract void validateConnection(PreludePlayer preludePlayer);
+    public abstract void validateConnection(PreludePlayer preludePlayer) throws IOException;
 
     /**
      * Get a ResentMod instance.
@@ -88,8 +108,8 @@ public abstract class Prelude {
      */
     @Immutable
     @ApiStatus.Internal
-    public static ServerPacketManager getServerPacketManager() {
-        return serverPacketManager;
+    public static C2SPacketHandler getC2SPacketHandler() {
+        return c2SPacketHandler;
     }
 
     /**
@@ -109,10 +129,11 @@ public abstract class Prelude {
      * @throws IllegalStateException if the packet manager instance is already assigned
      */
     @ApiStatus.Internal
-    public static void setServerPacketManager(ServerPacketManager newPacketManager) {
-        if (serverPacketManager != null) {
+    public static void setC2SPacketHandler(C2SPacketHandler newPacketHandler) {
+        if (c2SPacketHandler != null) {
             throw new IllegalStateException("Packet Manager instance has already been set");
         }
-        serverPacketManager = newPacketManager;
+        c2SPacketHandler = newPacketHandler;
+        C2SPacket.setHandler(newPacketHandler);
     }
 }

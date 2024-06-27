@@ -16,28 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package prelude.mods;
+package prelude;
 
-import prelude.PreludePlugin;
-import prelude.api.Prelude;
-import prelude.api.mods.FreeLook;
+import prelude.adapter.VersionAdapter;
+import prelude.api.mods.AnchorRenderer;
+import prelude.api.mods.OffHand;
+import prelude.api.mods.TotemUsedRenderer;
 
-public final class BukkitFreeLook extends FreeLook {
+public class DefaultVersionAdapter implements VersionAdapter {
+    @Override
+    public void registerAnchorListener(AnchorRenderer anchorMod) {
 
-    public BukkitFreeLook() {
-        super();
-        Prelude.getInstance().addMod(this);
-
-        enabled = true;
     }
 
     @Override
-    public boolean isAllowed() {
-        return PreludePlugin.getInstance().getModConfig().getBoolean("free-look.allowed", true);
+    public void registerTotemListener(TotemUsedRenderer totemMod) {
+
     }
 
     @Override
-    public boolean isOfficiallyHooked() {
-        return true;
+    public void registerOffhandListeners(OffHand offHandMod) {
+
     }
 }

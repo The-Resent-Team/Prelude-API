@@ -20,29 +20,21 @@ package prelude.api.mods;
 
 import prelude.api.PreludePlayer;
 import prelude.api.ResentMod;
-import prelude.protocol.packets.s2c.ServerTpsPacket;
+import prelude.protocol.packets.s2c.TotemUsedPacket;
 
 import java.io.IOException;
 
-public abstract class ServerTps extends ResentMod {
-    protected ServerTps() {
+public abstract class TotemUsedRenderer extends ResentMod {
+    protected TotemUsedRenderer() {
         super();
     }
 
-    public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
-        int characteristic = (int) Math.floor(currentTps);
-        int mantissaToFourDigits = (int) (Math.floor(currentTps * 10000) - characteristic * 10000);
-
-        preludePlayer.sendPacket(
-                ServerTpsPacket.builder()
-                        .characteristic((byte) characteristic)
-                        .mantissa(mantissaToFourDigits)
-                        .build()
-        );
+    public void sendTotemPoppedEvent(PreludePlayer preludePlayer) throws IOException {
+        preludePlayer.sendPacket(new TotemUsedPacket());
     }
 
     @Override
-    public final String getModId() {
-        return "server_tps";
+    public String getModId() {
+        return "totem_used_renderer";
     }
 }

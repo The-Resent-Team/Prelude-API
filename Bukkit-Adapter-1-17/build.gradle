@@ -5,10 +5,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
-    implementation files("${rootDir}/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
+    compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+    compileOnly project(":API")
 
-    implementation project(":API")
+    implementation project(":Bukkit-Adapter")
 }
 
 shadowJar {
