@@ -1,27 +1,39 @@
+/*
+ * Prelude-API is a plugin to implement features for the Client.
+ * Copyright (C) 2024 cire3, Preva1l
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package prelude;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.scheduler.BukkitRunnable;
 import prelude.adapter.BukkitPlayerAdapter;
 import prelude.adapter.VersionAdapter;
 import prelude.api.Prelude;
-import prelude.api.PreludePlayer;
 import prelude.mods.BukkitAnchorRenderer;
 import prelude.mods.BukkitOffHand;
 import prelude.mods.BukkitServerTps;
 import prelude.mods.BukkitTotemUsedRenderer;
 import prelude.protocol.C2SPacket;
-import prelude.protocol.packets.c2s.ClientHandshakePacket;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -122,6 +134,10 @@ public final class BaseImplementation implements Listener {
     }
 
     // --------------- BEGIN COPYING FROM ESSENTIALS ----------------
+
+    /*
+    * Note: I could not find an appropriate GPL 3 header copyright, so there isn't one for this piece of copied code
+    * */
 
     /*
     * Copied from https://github.com/essentials/Essentials/blob/a2c43d822c66e617a84df9a8f074b9c3a3e32fae/Essentials/src/com/earth2me/essentials/EssentialsTimer.java

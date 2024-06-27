@@ -1,3 +1,21 @@
+/*
+ * Prelude-API is a plugin to implement features for the Client.
+ * Copyright (C) 2024 cire3, Preva1l
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package prelude.adapter.impl;
 
 import org.bukkit.Bukkit;
@@ -18,7 +36,6 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import prelude.adapter.BukkitPlayerAdapter;
-import prelude.adapter.BukkitPluginMessageSender;
 import prelude.adapter.VersionAdapter;
 import prelude.api.mods.AnchorRenderer;
 import prelude.api.mods.OffHand;
@@ -33,7 +50,6 @@ import java.util.logging.Logger;
 
 public final class Adapter_1_17 implements VersionAdapter {
     private final JavaPlugin plugin;
-    private final Map<Player, ItemStack> offhandItemMap = new HashMap<>();
 
     public Adapter_1_17(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -149,7 +165,7 @@ public final class Adapter_1_17 implements VersionAdapter {
 
     public class OffhandListeners implements Listener {
         OffHand offHand;
-        private Map<Player, ItemStack> playerToOffhand = new HashMap<>();
+        private final Map<Player, ItemStack> playerToOffhand = new HashMap<>();
 
         public OffhandListeners(OffHand offHand) {
             this.offHand = offHand;

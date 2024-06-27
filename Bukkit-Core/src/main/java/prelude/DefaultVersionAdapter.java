@@ -16,37 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package prelude.mods;
+package prelude;
 
-import prelude.PreludePlugin;
-import prelude.api.PreludePlayer;
-import prelude.api.Prelude;
+import prelude.adapter.VersionAdapter;
+import prelude.api.mods.AnchorRenderer;
+import prelude.api.mods.OffHand;
 import prelude.api.mods.TotemUsedRenderer;
 
-import java.io.IOException;
+public class DefaultVersionAdapter implements VersionAdapter {
+    @Override
+    public void registerAnchorListener(AnchorRenderer anchorMod) {
 
-public final class BukkitTotemUsedRenderer extends TotemUsedRenderer {
-
-    public BukkitTotemUsedRenderer() {
-        super();
-        Prelude.getInstance().addMod(this);
-
-        enabled = true;
     }
 
     @Override
-    public boolean isAllowed() {
-        return PreludePlugin.getInstance().getModConfig().getBoolean("totem-tweaks.allowed", true);
+    public void registerTotemListener(TotemUsedRenderer totemMod) {
+
     }
 
     @Override
-    public boolean isOfficiallyHooked() {
-        return true;
-    }
+    public void registerOffhandListeners(OffHand offHandMod) {
 
-    @Override
-    public void sendTotemPoppedEvent(PreludePlayer preludePlayer) throws IOException {
-        super.sendTotemPoppedEvent(preludePlayer);
-        PreludePlugin.getInstance().debug("Dispatched TotemPoppedEvent to " + preludePlayer);
     }
 }
