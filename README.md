@@ -1,14 +1,4 @@
-Discontinued: New implementation of Prelude-API will be made
-
-
-
-
-
-
-
-
-
-[![PR Tests](https://github.com/ProdPreva1l/ResentPrelude/actions/workflows/pr_tests.yml/badge.svg?branch=master)](https://github.com/ProdPreva1l/ResentPrelude/actions/workflows/pr_tests.yml)
+[![PR Tests](https://github.com/The-Resent-Team/Prelude-API/actions/workflows/pr_tests.yml/badge.svg?branch=master)](https://github.com/The-Resent-Team/Prelude-API/actions/workflows/pr_tests.yml)
 
 # Prelude API (Resent Clients API for servers)
 
