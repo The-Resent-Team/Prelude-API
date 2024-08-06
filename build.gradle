@@ -34,8 +34,9 @@ allprojects {
     }
 
     dependencies {
-        compileOnly 'org.jetbrains:annotations:24.1.0'
+        implementation files("$rootDir/libs/Prelude-Protocol-1.0-SNAPSHOT.jar")
 
+        compileOnly 'org.jetbrains:annotations:24.1.0'
         compileOnly 'org.projectlombok:lombok:1.18.16'
         annotationProcessor 'org.projectlombok:lombok:1.18.16'
 

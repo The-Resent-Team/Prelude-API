@@ -20,7 +20,7 @@ package com.resentclient.prelude;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import com.resentclient.prelude.PreludePlugin;
+import com.resentclient.prelude.bukkit.PreludePlugin;
 import org.junit.jupiter.api.*;
 
 @DisplayName("Plugin Tests")

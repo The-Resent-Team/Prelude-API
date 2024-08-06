@@ -35,26 +35,31 @@ public final class BukkitPlayerAdapter {
                 }
     };
 
-    private static final Map<Player, PreludePlayer> MAP = new HashMap<>();
-    private static final Map<Player, PreludePlayer.Info> INFO = new HashMap<>();
+    private static final Map<Player, PreludePlayer> PRELUDE_PLAYER_CACHE = new HashMap<>();
+    private static final Map<Player, PreludePlayer.Info> PRELUDE_PLAYER_INFO = new HashMap<>();
+
     private static final Set<Player> VERIFIED_PLAYERS = new HashSet<>();
-    private static final Map<Player, byte[]> HAS_SENT_VERIFICATION_REQUESTS = new HashMap<>();
+    private static final Map<Player, byte[]> SENT_VERIFICATION_REQUESTS = new HashMap<>();
+
+    private static final Set<Player> HAVE_SENT_HANDSHAKE_PLAYERS = new HashSet<>();
+    private static final Set<Player> ACCEPTED_HANDSHAKE_PLAYERS = new HashSet<>();
+
     private static final Set<Player> PLAYERS_WHO_TRIED_TO_HANG_PRELUDE = new HashSet<>();
 
     public static PreludePlayer adapt(VersionAdapter adapter, Player player) {
-        if (MAP.containsKey(player))
-            return MAP.get(player);
+        if (PRELUDE_PLAYER_CACHE.containsKey(player))
+            return PRELUDE_PLAYER_CACHE.get(player);
 
-        if (INFO.containsKey(player)) {
-            PreludePlayer preludePlayer = new PreludePlayer(player.getName(), player.getUniqueId(), INFO.get(player)) {
+        if (PRELUDE_PLAYER_INFO.containsKey(player)) {
+            PreludePlayer preludePlayer = new PreludePlayer(player.getName(), player.getUniqueId(), PRELUDE_PLAYER_INFO.get(player)) {
                 @Override
                 public void sendBytes(byte[] bytes) throws IOException {
                     adapter.getMessageSender().sendPluginMessagePacket(player, Prelude.CHANNEL, bytes);
                 }
             };
 
-            MAP.put(player, preludePlayer);
-            INFO.remove(player);
+            PRELUDE_PLAYER_CACHE.put(player, preludePlayer);
+            PRELUDE_PLAYER_INFO.remove(player);
 
             return preludePlayer;
         }
@@ -62,48 +67,65 @@ public final class BukkitPlayerAdapter {
         return NON_RESENT_CLIENT_PLAYER;
     }
 
-    public static boolean didPlayerTryToHang(Player player) {
-        return PLAYERS_WHO_TRIED_TO_HANG_PRELUDE.contains(player);
-    }
-
+    // setters (real)
     public static void markPlayerTriedToHang(Player player) {
         PLAYERS_WHO_TRIED_TO_HANG_PRELUDE.add(player);
     }
 
-    public static boolean hasSentPlayerVerification(Player player) {
-        return HAS_SENT_VERIFICATION_REQUESTS.containsKey(player);
-    }
-
-    public static byte[] getPlayerPayload(Player player) {
-        return HAS_SENT_VERIFICATION_REQUESTS.get(player);
-    }
-
     public static void markSentPlayerVerification(Player player, byte[] payload) {
-        HAS_SENT_VERIFICATION_REQUESTS.put(player, payload);
+        SENT_VERIFICATION_REQUESTS.put(player, payload);
     }
 
+    public static void markPlayerAccepted(Player player) {
+        ACCEPTED_HANDSHAKE_PLAYERS.add(player);
+    }
+
+    public static void markPlayerVerified(Player player) {
+        VERIFIED_PLAYERS.add(player);
+        SENT_VERIFICATION_REQUESTS.remove(player);
+    }
+
+    public static void markSentServerHandshake(Player player) {
+        HAVE_SENT_HANDSHAKE_PLAYERS.add(player);
+    }
+
+    // getters (not real)
     public static boolean isPlayerVerified(Player player) {
         return VERIFIED_PLAYERS.contains(player);
     }
 
-    public static void verifyPlayer(Player player) {
-        VERIFIED_PLAYERS.add(player);
-        HAS_SENT_VERIFICATION_REQUESTS.remove(player);
+    public static boolean didPlayerTryToHang(Player player) {
+        return PLAYERS_WHO_TRIED_TO_HANG_PRELUDE.contains(player);
     }
 
+    public static byte[] getPlayerPayload(Player player) {
+        return SENT_VERIFICATION_REQUESTS.get(player);
+    }
+
+    public static boolean isPlayerAccepted(Player player) {
+        return ACCEPTED_HANDSHAKE_PLAYERS.contains(player);
+    }
+
+    public static boolean haveSentServerHandshake(Player player) {
+        return HAVE_SENT_HANDSHAKE_PLAYERS.contains(player);
+    }
+
+    // other stuff
     public static void registerInfo(Player player, PreludePlayer.Info _info) {
         if (player == null)
             return;
 
-        if (!MAP.containsKey(player))
-            INFO.put(player, _info);
+        if (!PRELUDE_PLAYER_CACHE.containsKey(player))
+            PRELUDE_PLAYER_INFO.put(player, _info);
     }
 
     public static void remove(Player player) {
-        MAP.remove(player);
-        INFO.remove(player);
+        PRELUDE_PLAYER_CACHE.remove(player);
+        PRELUDE_PLAYER_INFO.remove(player);
         VERIFIED_PLAYERS.remove(player);
-        HAS_SENT_VERIFICATION_REQUESTS.remove(player);
+        ACCEPTED_HANDSHAKE_PLAYERS.remove(player);
+        SENT_VERIFICATION_REQUESTS.remove(player);
+        HAVE_SENT_HANDSHAKE_PLAYERS.remove(player);
         PLAYERS_WHO_TRIED_TO_HANG_PRELUDE.remove(player);
     }
 }

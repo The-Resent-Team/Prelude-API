@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude.mods;
+package com.resentclient.prelude.bukkit.mods;
 
-import com.resentclient.prelude.PreludePlugin;
+import com.resentclient.prelude.bukkit.PreludePlugin;
 import com.resentclient.prelude.api.PreludePlayer;
 import com.resentclient.prelude.api.Prelude;
 import com.resentclient.prelude.api.mods.TotemUsedRenderer;

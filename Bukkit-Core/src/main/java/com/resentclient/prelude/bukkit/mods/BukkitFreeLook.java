@@ -16,34 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude.mods;
+package com.resentclient.prelude.bukkit.mods;
 
-import com.resentclient.prelude.PreludePlugin;
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
-import com.resentclient.prelude.api.PreludePlayer;
+import com.resentclient.prelude.bukkit.PreludePlugin;
 import com.resentclient.prelude.api.Prelude;
-import com.resentclient.prelude.api.mods.ServerTps;
+import com.resentclient.prelude.api.mods.FreeLook;
 
-import java.io.IOException;
+public final class BukkitFreeLook extends FreeLook {
 
-public final class BukkitServerTps extends ServerTps {
-
-    public BukkitServerTps() {
+    public BukkitFreeLook() {
         super();
         Prelude.getInstance().addMod(this);
+
         enabled = true;
     }
 
     @Override
-    public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
-        super.sendServerTpsUpdate(preludePlayer, currentTps);
-        if (!BukkitPlayerAdapter.NON_RESENT_CLIENT_PLAYER.equals(preludePlayer))
-            PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer.getUsername());
-    }
-
-    @Override
     public boolean isAllowed() {
-        return PreludePlugin.getInstance().getModConfig().getBoolean("server-tps.allowed", true);
+        return PreludePlugin.getInstance().getModConfig().getBoolean("free-look.allowed", true);
     }
 
     @Override

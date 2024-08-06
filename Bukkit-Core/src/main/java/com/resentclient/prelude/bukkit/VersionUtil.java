@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude;
+package com.resentclient.prelude.bukkit;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;

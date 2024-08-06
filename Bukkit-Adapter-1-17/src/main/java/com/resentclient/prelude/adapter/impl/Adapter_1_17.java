@@ -61,8 +61,9 @@ public final class Adapter_1_17 implements VersionAdapter {
     }
 
     @Override
-    public boolean equipSlotToOffhand(Player player, int slot) {
-        if (player == null) return false;
+    public void equipSlotToOffhand(Player player, int slot) {
+        if (true)
+            return; // TODO: validate inputs to prevent exploits
         try {
             ItemStack attemptedItemToSwap = player.getOpenInventory().getItem(slot);
             ItemStack offhand = player.getInventory().getItemInOffHand();
@@ -73,10 +74,7 @@ public final class Adapter_1_17 implements VersionAdapter {
             player.updateInventory();
         } catch (Exception e) {
             // most likely someone trying to abuse prelude into spamming console
-            return false;
         }
-
-        return true;
     }
 
     public class TotemListeners implements Listener {

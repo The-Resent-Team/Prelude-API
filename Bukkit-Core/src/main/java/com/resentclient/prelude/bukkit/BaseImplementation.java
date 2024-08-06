@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude;
+package com.resentclient.prelude.bukkit;
 
-import com.resentclient.prelude.mods.BukkitOffHand;
-import com.resentclient.prelude.mods.BukkitServerTps;
-import com.resentclient.prelude.mods.BukkitTotemUsedRenderer;
+import com.resentclient.prelude.api.PreludePlayer;
+import com.resentclient.prelude.bukkit.mods.BukkitOffHand;
+import com.resentclient.prelude.bukkit.mods.BukkitServerTps;
+import com.resentclient.prelude.bukkit.mods.BukkitTotemUsedRenderer;
 import com.resentclient.resentxprelude.AlgorithmRSA;
 import com.resentclient.resentxprelude.SHA256Digest;
 import org.bukkit.Bukkit;
@@ -38,17 +39,12 @@ import com.resentclient.prelude.protocol.PreludeC2SPacket;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static com.resentclient.resentxprelude.AlgorithmRSA.PRELUDE_CLIENT_PUBLIC_E;
-import static com.resentclient.resentxprelude.AlgorithmRSA.PRELUDE_CLIENT_PUBLIC_N;
 
 /**
  * The base Implementation of the ResentAPI for bukkit.
@@ -117,6 +113,11 @@ public final class BaseImplementation implements Listener {
         public final JavaPlugin plugin;
         public final VersionAdapter adapter;
 
+        private static final Map<Integer, BigInteger> N_CACHE = new HashMap<>();
+        private static final Set<Integer> FAILED_N = new HashSet<>();
+        private static final byte[] TEMP_BUFFER = new byte[32];
+        private static final byte[] RES_PRE_VER_ARR = new byte[] { 'R', 'E', 'S', 'P', 'R', 'E', 'V', 'E', 'R' };
+
         public ResentClientMessageListener(JavaPlugin plugin, VersionAdapter adapter) {
             this.plugin = plugin;
             this.adapter = adapter;
@@ -147,7 +148,8 @@ public final class BaseImplementation implements Listener {
                 return;
             }
 
-            BukkitC2SPacketHandler.bindPlayer(player);
+            BukkitC2SPacketHandler.bindPlayer(player); // set to active player becuz pro code design
+
             pkt.get().processSelf(Prelude.getC2SPacketHandler());
         }
 
@@ -163,27 +165,40 @@ public final class BaseImplementation implements Listener {
             // they can keep on trying to verify (until another plugin/server)
             // kicks them
             if (!BukkitPlayerAdapter.isPlayerVerified(player)) {
+                PreludePlayer.Info info = BukkitPlayerAdapter.adapt(adapter, player).getInfo();
+                if (info == null)
+                    return true; // they haven't sent info yet
+
                 // ids for Handshake and HandshakeAcknowledge
                 if (message[0] != 0 && message[0] != 1) {
-                    if (BukkitPlayerAdapter.hasSentPlayerVerification(player)) {
-                        ByteArrayInputStream is = new ByteArrayInputStream(message);
-                        if (is.read() == 'R' || is.read() == 'E' || is.read() == 'S' ||
-                                is.read() == 'P' || is.read() == 'R' || is.read() == 'E' ||
-                                is.read() == 'V' || is.read() == 'E' || is.read() == 'R') {
+                    byte[] payload = BukkitPlayerAdapter.getPlayerPayload(player);
+                    final BigInteger PUBLIC_N = getNForInfo(info);
 
-                            byte[] sentPayload = BukkitPlayerAdapter.getPlayerPayload(player);
-                            byte[] sentBackPayload = new byte[sentPayload.length];
+                    if (PUBLIC_N == null) {
+                        // TODO: special handling for this, I can't just mark them verified so they can try to exploit prelude
+                        return true;
+                    }
+
+                    // we've sent verification, check if this packet is a verification response
+                    if (payload != null) {
+                        ByteArrayInputStream is = new ByteArrayInputStream(message);
+                        if (is.read() == 'R' && is.read() == 'E' && is.read() == 'S' &&
+                                is.read() == 'P' && is.read() == 'R' && is.read() == 'E' &&
+                                is.read() == 'V' && is.read() == 'E' && is.read() == 'R') {
+
+                            byte[] sentBackPayload = new byte[payload.length];
                             try {
                                 if (is.read(sentBackPayload) != sentBackPayload.length)
                                     return true;
-                                if (!Arrays.equals(sentBackPayload, sentPayload))
+                                if (!Arrays.equals(sentBackPayload, payload))
                                     return true;
 
                                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                                byte[] buffer = new byte[16];
                                 int iterations = 0; // don't let them hang Prelude
-                                while (is.read(buffer) != -1 && ++iterations < 10)
-                                    bao.write(buffer);
+
+                                // read at most 320 bytes (hash shouldn't be over 32 bytes anyway tf)
+                                while (is.read(TEMP_BUFFER) != -1 && ++iterations < 10)
+                                    bao.write(TEMP_BUFFER);
 
                                 if (iterations == 10) {
                                     BukkitPlayerAdapter.markPlayerTriedToHang(player);
@@ -191,30 +206,29 @@ public final class BaseImplementation implements Listener {
                                 }
 
                                 byte[] responseHash = AlgorithmRSA.cipherToBytes(AlgorithmRSA.decrypt(new BigInteger(bao.toByteArray()),
-                                        PRELUDE_CLIENT_PUBLIC_E, PRELUDE_CLIENT_PUBLIC_N));
+                                        PRELUDE_CLIENT_PUBLIC_E, PUBLIC_N));
+                                if (responseHash.length != 32) // sha 256 hash is 32 bytes
+                                    return true;
 
                                 SHA256Digest digest = new SHA256Digest();
-                                digest.update(new byte[] { 'R', 'E', 'S', 'P', 'R', 'E', 'V', 'E', 'R' }, 0, 9);
+                                digest.update(RES_PRE_VER_ARR, 0, 9);
                                 digest.update(sentBackPayload, 0, sentBackPayload.length);
-                                byte[] hash = new byte[32];
-                                digest.doFinal(hash, 0);
+                                digest.doFinal(TEMP_BUFFER, 0);
 
-                                if (!Arrays.equals(hash, responseHash))
+                                if (!Arrays.equals(TEMP_BUFFER, responseHash))
                                     return true;
 
                                 // hash checks out, we decrypted with public key successfully so client has
                                 // the proper private key, sent payload matches, they didn't try to
-                                BukkitPlayerAdapter.verifyPlayer(player);
+                                BukkitPlayerAdapter.markPlayerVerified(player);
                                 return false;
                             } catch (IOException e) {
                                 if (plugin instanceof PreludePlugin)
-                                    ((PreludePlugin)plugin).debug("Exception while reading response!");
+                                    ((PreludePlugin)plugin).debug("Exception while reading verification response!");
                                 else
-                                    plugin.getLogger().warning("Exception while reading response!");
+                                    plugin.getLogger().warning("Exception while reading verification response!");
                                 return true;
                             }
-                        } else {
-                            return true; // not a verification response
                         }
                     } else {
                         ByteArrayOutputStream bao = new ByteArrayOutputStream();
@@ -227,7 +241,7 @@ public final class BaseImplementation implements Listener {
 
                             bytes = bao.toByteArray();
                             byte[] encryptedMessage = AlgorithmRSA.cipherToBytes(AlgorithmRSA.encrypt(AlgorithmRSA.bytesToCipher(bytes),
-                                    PRELUDE_CLIENT_PUBLIC_E, PRELUDE_CLIENT_PUBLIC_N));
+                                    PRELUDE_CLIENT_PUBLIC_E, PUBLIC_N));
 
                             BukkitPlayerAdapter.adapt(adapter, player).sendBytes(encryptedMessage);
                             BukkitPlayerAdapter.markSentPlayerVerification(player, bytes);
@@ -247,6 +261,30 @@ public final class BaseImplementation implements Listener {
             }
 
             return false; // they are verified
+        }
+
+        private BigInteger getNForInfo(PreludePlayer.Info info) {
+            if (FAILED_N.contains(info.resentBuildInteger))
+                return null;
+
+            BigInteger cached = N_CACHE.get(info.resentBuildInteger);
+            if (cached != null)
+                return cached;
+
+            try {
+                Field N = AlgorithmRSA.class.getDeclaredField("PRELUDE_CLIENT_PUBLIC_N_%maj%_%min%"
+                        .replace("%maj%", info.resentMajorVersion + "")
+                        .replace("%min%", info.resentMinorVersion + ""));
+                BigInteger value = (BigInteger) N.get(info);
+                if (value == null)
+                    FAILED_N.add(info.resentBuildInteger);
+
+                N_CACHE.put(info.resentBuildInteger, value);
+
+                return value;
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

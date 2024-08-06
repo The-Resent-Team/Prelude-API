@@ -16,13 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude;
+package com.resentclient.prelude.bukkit;
 
 import com.resentclient.prelude.adapter.DefaultVersionAdapter;
-import com.resentclient.prelude.mods.BukkitFreeLook;
-import com.resentclient.prelude.mods.BukkitOffHand;
-import com.resentclient.prelude.mods.BukkitServerTps;
-import com.resentclient.prelude.mods.BukkitTotemUsedRenderer;
+import com.resentclient.prelude.bukkit.mods.*;
+import com.resentclient.prelude.bukkit.mods.BukkitTotemUsedRenderer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;

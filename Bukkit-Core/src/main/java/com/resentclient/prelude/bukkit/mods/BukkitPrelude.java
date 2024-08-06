@@ -16,10 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.resentclient.prelude;
+package com.resentclient.prelude.bukkit.mods;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.resentclient.prelude.bukkit.BukkitC2SPacketHandler;
+import com.resentclient.prelude.bukkit.PreludePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import com.resentclient.prelude.adapter.BukkitPlayerAdapter;

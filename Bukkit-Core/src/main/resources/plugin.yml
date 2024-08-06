@@ -1,6 +1,6 @@
 name: PreludeAPI
 version: '${version}'
-main: com.resentclient.prelude.PreludePlugin
+main: com.resentclient.prelude.bukkit.PreludePlugin
 api-version: '1.13'
 authors:
   - Preva1l

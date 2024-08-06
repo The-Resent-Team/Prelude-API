@@ -19,10 +19,12 @@
 
 package com.resentclient.prelude.adapter;
 
+import com.resentclient.prelude.protocol.packets.s2c.play.UpdateOffhandPreludeS2CPacket;
 import org.bukkit.entity.Player;
 import com.resentclient.prelude.api.mods.OffHand;
 import com.resentclient.prelude.api.mods.TotemUsedRenderer;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public interface VersionAdapter {
@@ -62,11 +64,18 @@ public interface VersionAdapter {
 
     /**
      * Attempts to put the item in specified slot into the offhand, and the offhand into specified slot
-     * @return true if it succeeds
      * @apiNote this will call an PlayerSwapHandItemsEvent
      */
-    default boolean equipSlotToOffhand(Player player, int slot) {
-        return false;
+    default void equipSlotToOffhand(Player player, int slot) {
+        try {
+            BukkitPlayerAdapter.adapt(this, player).sendPacket(
+                    UpdateOffhandPreludeS2CPacket.builder()
+                            .serializedItem("ItemStack{NULL}")
+                            .canClientDisregardThis(false)
+                            .build());
+        } catch (IOException e) {
+            // ???????????????????????????????
+        }
     }
 
     /**
