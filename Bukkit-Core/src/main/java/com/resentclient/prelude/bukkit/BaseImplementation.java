@@ -275,7 +275,7 @@ public final class BaseImplementation implements Listener {
                 Field N = AlgorithmRSA.class.getDeclaredField("PRELUDE_CLIENT_PUBLIC_N_%maj%_%min%"
                         .replace("%maj%", info.resentMajorVersion + "")
                         .replace("%min%", info.resentMinorVersion + ""));
-                BigInteger value = (BigInteger) N.get(info);
+                BigInteger value = (BigInteger) N.get((AlgorithmRSA)null);
                 if (value == null)
                     FAILED_N.add(info.resentBuildInteger);
 
