@@ -58,11 +58,11 @@ public class BukkitPluginMessageSender_1_17 extends AbstractBukkitPluginMessageS
     private static boolean useDiscardedPayload;
 
     // Bukkit 1.8+ support
-    private Class<?> packetDataSerializerClass;
-    private Method packetDataSerializerWriteBytesMethod;
-    private Constructor<?> packetDataSerializerConstructor;
+    private static Class<?> packetDataSerializerClass;
+    private static Method packetDataSerializerWriteBytesMethod;
+    private static Constructor<?> packetDataSerializerConstructor;
 
-    private Method wrappedBufferMethod;
+    private static Method wrappedBufferMethod;
 
     public BukkitPluginMessageSender_1_17(Logger _logger) {
         instance = this;

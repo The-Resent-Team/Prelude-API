@@ -117,6 +117,7 @@ public final class BaseImplementation implements Listener {
         private static final Set<Integer> FAILED_N = new HashSet<>();
         private static final byte[] TEMP_BUFFER = new byte[32];
         private static final byte[] RES_PRE_VER_ARR = new byte[] { 'R', 'E', 'S', 'P', 'R', 'E', 'V', 'E', 'R' };
+        private static final byte[] VERIF_ACKNOWLEDGE_ARR = new byte[]{ 'R', 'E', 'S', 'P', 'R', 'E', 'V', 'E', 'R', 'A', 'C', 'C', 'E', 'P', 'T' };
 
         public ResentClientMessageListener(JavaPlugin plugin, VersionAdapter adapter) {
             this.plugin = plugin;
@@ -182,10 +183,11 @@ public final class BaseImplementation implements Listener {
                     // we've sent verification, check if this packet is a verification response
                     if (payload != null) {
                         ByteArrayInputStream is = new ByteArrayInputStream(message);
-                        if (is.read() == 'R' && is.read() == 'E' && is.read() == 'S' &&
+                        if (
+                                is.read() == 'R' && is.read() == 'E' && is.read() == 'S' &&
                                 is.read() == 'P' && is.read() == 'R' && is.read() == 'E' &&
-                                is.read() == 'V' && is.read() == 'E' && is.read() == 'R') {
-
+                                is.read() == 'V' && is.read() == 'E' && is.read() == 'R'
+                        ) {
                             byte[] sentBackPayload = new byte[payload.length];
                             try {
                                 if (is.read(sentBackPayload) != sentBackPayload.length)
@@ -221,10 +223,11 @@ public final class BaseImplementation implements Listener {
                                 // hash checks out, we decrypted with public key successfully so client has
                                 // the proper private key, sent payload matches, they didn't try to
                                 BukkitPlayerAdapter.markPlayerVerified(player);
+                                BukkitPlayerAdapter.adapt(adapter, player).sendBytes(VERIF_ACKNOWLEDGE_ARR);
                                 return false;
                             } catch (IOException e) {
                                 if (plugin instanceof PreludePlugin)
-                                    ((PreludePlugin)plugin).debug("Exception while reading verification response!");
+                                    ((PreludePlugin) plugin).debug("Exception while reading verification response!");
                                 else
                                     plugin.getLogger().warning("Exception while reading verification response!");
                                 return true;
@@ -234,20 +237,23 @@ public final class BaseImplementation implements Listener {
                         ByteArrayOutputStream bao = new ByteArrayOutputStream();
                         try {
                             // 25 bytes
+
+                            // dont change
                             bao.write("RESENTXPRELDEVERIFICATION".getBytes(StandardCharsets.US_ASCII));
+
                             byte[] bytes = new byte[7];
                             new Random().nextBytes(bytes);
-                            bao.write(bytes);
 
-                            bytes = bao.toByteArray();
-                            byte[] encryptedMessage = AlgorithmRSA.cipherToBytes(AlgorithmRSA.encrypt(AlgorithmRSA.bytesToCipher(bytes),
+                            byte[] encryptedBytes = AlgorithmRSA.cipherToBytes(AlgorithmRSA.encrypt(AlgorithmRSA.bytesToCipher(bytes),
                                     PRELUDE_CLIENT_PUBLIC_E, PUBLIC_N));
 
-                            BukkitPlayerAdapter.adapt(adapter, player).sendBytes(encryptedMessage);
+                            bao.write(encryptedBytes);
+
+                            BukkitPlayerAdapter.adapt(adapter, player).sendBytes(bao.toByteArray());
                             BukkitPlayerAdapter.markSentPlayerVerification(player, bytes);
                         } catch (IOException e) {
                             if (plugin instanceof PreludePlugin)
-                                ((PreludePlugin)plugin).debug("Failed to send verification payload!");
+                                ((PreludePlugin) plugin).debug("Failed to send verification payload!");
                             else
                                 plugin.getLogger().warning("Failed to send verification payload!");
                             return false; // we failed to send, don't disable prelude if this happens
@@ -275,9 +281,11 @@ public final class BaseImplementation implements Listener {
                 Field N = AlgorithmRSA.class.getDeclaredField("PRELUDE_CLIENT_PUBLIC_N_%maj%_%min%"
                         .replace("%maj%", info.resentMajorVersion + "")
                         .replace("%min%", info.resentMinorVersion + ""));
-                BigInteger value = (BigInteger) N.get((AlgorithmRSA)null);
-                if (value == null)
+                BigInteger value = (BigInteger) N.get((AlgorithmRSA) null);
+                if (value == null) {
                     FAILED_N.add(info.resentBuildInteger);
+                    return null;
+                }
 
                 N_CACHE.put(info.resentBuildInteger, value);
 
@@ -291,12 +299,12 @@ public final class BaseImplementation implements Listener {
     // --------------- BEGIN COPYING FROM ESSENTIALS ----------------
 
     /*
-    * Note: I could not find an appropriate GPL 3 header copyright, so there isn't one for this piece of copied code
-    * */
+     * Note: I could not find an appropriate GPL 3 header copyright, so there isn't one for this piece of copied code
+     * */
 
     /*
-    * Copied from https://github.com/essentials/Essentials/blob/a2c43d822c66e617a84df9a8f074b9c3a3e32fae/Essentials/src/com/earth2me/essentials/EssentialsTimer.java
-    * */
+     * Copied from https://github.com/essentials/Essentials/blob/a2c43d822c66e617a84df9a8f074b9c3a3e32fae/Essentials/src/com/earth2me/essentials/EssentialsTimer.java
+     * */
     private static class TpsTimer implements Runnable {
         private transient long lastPoll = System.nanoTime();
         private final LinkedList<Double> history = new LinkedList<>();
