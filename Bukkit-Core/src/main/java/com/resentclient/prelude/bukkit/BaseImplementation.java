@@ -151,7 +151,7 @@ public final class BaseImplementation implements Listener {
 
             BukkitC2SPacketHandler.bindPlayer(player); // set to active player becuz pro code design
 
-            pkt.get().processSelf(Prelude.getC2SPacketHandler());
+            pkt.get().processSelf(Prelude.getC2sPacketHandler());
         }
 
         private boolean shouldSkipPacket(Player player, byte[] message) {

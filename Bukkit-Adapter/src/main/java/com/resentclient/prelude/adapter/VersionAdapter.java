@@ -19,6 +19,7 @@
 
 package com.resentclient.prelude.adapter;
 
+import com.resentclient.prelude.protocol.packets.c2s.interactions.InteractWithOffhandPreludeC2SPacket;
 import com.resentclient.prelude.protocol.packets.s2c.play.UpdateOffhandPreludeS2CPacket;
 import org.bukkit.entity.Player;
 import com.resentclient.prelude.api.mods.OffHand;
@@ -75,6 +76,17 @@ public interface VersionAdapter {
                             .build());
         } catch (IOException e) {
             // ???????????????????????????????
+        }
+    }
+
+    default void interactWithOffhand(Player activePlayer, InteractWithOffhandPreludeC2SPacket.InteractType interactType) {
+        try {
+            BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(UpdateOffhandPreludeS2CPacket.builder()
+                    .serializedItem("ItemStack{NULL}")
+                    .canClientDisregardThis(false)
+                    .build());
+        } catch (IOException e) {
+            // ???????????????
         }
     }
 

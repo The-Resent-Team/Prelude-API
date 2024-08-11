@@ -49,6 +49,7 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
                 pkt.getResentMinorVersion(), pkt.getResentBuildInteger(), pkt.getClientType(), pkt.doesClientClaimSelfIsRankedPlayer(), pkt.getEnabledMods());
 
         BukkitPlayerAdapter.registerInfo(activePlayer, info);
+
         try {
             BukkitPlayerAdapter.adapt(PreludePlugin.getInstance().getAdapter(), activePlayer).sendPacket(
                     ServerHandshakePreludeS2CPacket.builder()
@@ -90,6 +91,12 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
     @Override
     public void handleInteractWithOffhand(InteractWithOffhandPreludeC2SPacket pkt) {
         // TODO, make this not-abuseable
+        // essentially, we have to block movement packets and other interaction packets
+        // while the player is still using offhand, in order to prevent hacks/exploits
+        if (activePlayer == null)
+            return;
+
+        PreludePlugin.getInstance().getAdapter().interactWithOffhand(activePlayer, pkt.getInteractType());
     }
 
     @ApiStatus.ScheduledForRemoval

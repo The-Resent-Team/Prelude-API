@@ -43,7 +43,7 @@ public abstract class Prelude {
     /**
      * The PacketManager instance.
      */
-    private static PreludeC2SPacketHandler c2SPacketHandler = null;
+    private static PreludeC2SPacketHandler c2sPacketHandler = null;
 
     /**
      * Get a prelude player from a UUID, the player who owns the UUID must be online
@@ -108,8 +108,8 @@ public abstract class Prelude {
      */
     @Immutable
     @ApiStatus.Internal
-    public static PreludeC2SPacketHandler getC2SPacketHandler() {
-        return c2SPacketHandler;
+    public static PreludeC2SPacketHandler getC2sPacketHandler() {
+        return c2sPacketHandler;
     }
 
     /**
@@ -129,10 +129,10 @@ public abstract class Prelude {
      * @throws IllegalStateException if the packet manager instance is already assigned
      */
     @ApiStatus.Internal
-    public static void setC2SPacketHandler(PreludeC2SPacketHandler newPacketHandler) {
-        if (c2SPacketHandler != null) {
+    public static void setC2sPacketHandler(PreludeC2SPacketHandler newPacketHandler) {
+        if (c2sPacketHandler != null) {
             throw new IllegalStateException("Packet Manager instance has already been set");
         }
-        c2SPacketHandler = newPacketHandler;
+        c2sPacketHandler = newPacketHandler;
     }
 }
