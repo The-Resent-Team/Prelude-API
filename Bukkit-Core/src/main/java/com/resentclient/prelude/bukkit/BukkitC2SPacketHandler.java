@@ -99,7 +99,7 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
         PreludePlugin.getInstance().getAdapter().interactWithOffhand(activePlayer, pkt.getInteractType());
     }
 
-    @ApiStatus.ScheduledForRemoval
+    @ApiStatus.ScheduledForRemoval(inVersion = "2")
     @Deprecated
     @Override
     public void handleAttemptPlaceInLegacyIllegalSpots(AttemptPlaceInLegacyIllegalSpotsPreludeC2SPacket pkt) {

@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 public interface VersionAdapter {
     /**
      * Register the totem tweaks mod listeners
+     *
      * @param totemMod the instance of the mod to use
      */
     default void registerTotemListener(TotemUsedRenderer totemMod) {
@@ -39,6 +40,7 @@ public interface VersionAdapter {
 
     /**
      * Register the offhand mod listeners
+     *
      * @param offHandMod the instance of the mod to use
      */
     default void registerOffhandListeners(OffHand offHandMod) {
@@ -47,6 +49,7 @@ public interface VersionAdapter {
 
     /**
      * Check whether the adapter supports totem tweaks mod.
+     *
      * @return true if it does
      * @apiNote Totems are in MC Version 1.11+
      */
@@ -56,6 +59,7 @@ public interface VersionAdapter {
 
     /**
      * Check whether the adapter supports offhand mod.
+     *
      * @return true if it does
      * @apiNote OffHand is in MC Version 1.9+
      */
@@ -65,6 +69,7 @@ public interface VersionAdapter {
 
     /**
      * Attempts to put the item in specified slot into the offhand, and the offhand into specified slot
+     *
      * @apiNote this will call an PlayerSwapHandItemsEvent
      */
     default void equipSlotToOffhand(Player player, int slot) {
@@ -81,10 +86,12 @@ public interface VersionAdapter {
 
     default void interactWithOffhand(Player activePlayer, InteractWithOffhandPreludeC2SPacket.InteractType interactType) {
         try {
-            BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(UpdateOffhandPreludeS2CPacket.builder()
-                    .serializedItem("ItemStack{NULL}")
-                    .canClientDisregardThis(false)
-                    .build());
+            // reset interact progress :D
+            BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(
+                    UpdateOffhandPreludeS2CPacket.builder()
+                            .serializedItem("ItemStack{NULL}")
+                            .canClientDisregardThis(false)
+                            .build());
         } catch (IOException e) {
             // ???????????????
         }
@@ -99,6 +106,7 @@ public interface VersionAdapter {
 
     /**
      * Returns the plugin message sender for this adapter
+     *
      * @return plugin message sender
      */
     default AbstractBukkitPluginMessageSender getMessageSender() {
