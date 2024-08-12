@@ -29,6 +29,7 @@ import com.resentclient.prelude.protocol.packets.c2s.interactions.*;
 import com.resentclient.prelude.protocol.packets.s2c.*;
 
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
         if (activePlayer == null)
             return;
 
-        if (activePlayer.getOpenInventory().getType() == InventoryType.CRAFTING) // no inv open
+        if (activePlayer.getOpenInventory() instanceof PlayerInventory) // no inv open
             if (pkt.getSlot() != activePlayer.getInventory().getHeldItemSlot())
                 return; // nice try bucko
 
