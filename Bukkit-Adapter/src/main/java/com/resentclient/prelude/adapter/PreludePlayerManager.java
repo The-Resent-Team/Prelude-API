@@ -26,7 +26,7 @@ import com.resentclient.prelude.api.PreludePlayer;
 import java.io.IOException;
 import java.util.*;
 
-public final class BukkitPlayerAdapter {
+public final class PreludePlayerManager {
     public static final PreludePlayer NON_RESENT_CLIENT_PLAYER =
             new PreludePlayer(null, null, PreludePlayer.Info.UNKNOWN_INFO) {
                 @Override

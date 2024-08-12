@@ -31,7 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
+import com.resentclient.prelude.adapter.PreludePlayerManager;
 import com.resentclient.prelude.adapter.VersionAdapter;
 import com.resentclient.prelude.api.Prelude;
 import com.resentclient.prelude.protocol.PreludeC2SPacket;
@@ -65,7 +65,7 @@ public final class BaseImplementation implements Listener {
             }
             for (Player player : Bukkit.getOnlinePlayers()) {
                 try {
-                    tpsMod.get().sendServerTpsUpdate(BukkitPlayerAdapter.adapt(plugin.getAdapter(), player), timer.getAverageTPS());
+                    tpsMod.get().sendServerTpsUpdate(PreludePlayerManager.adapt(plugin.getAdapter(), player), timer.getAverageTPS());
                 } catch (IOException e) {
                     plugin.debug("Failed to send TPS update to " + player.getName());
                     plugin.debug(e.toString());
@@ -106,7 +106,7 @@ public final class BaseImplementation implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        BukkitPlayerAdapter.remove(player);
+        PreludePlayerManager.remove(player);
     }
 
     public static class ResentClientMessageListener implements PluginMessageListener {
@@ -157,7 +157,7 @@ public final class BaseImplementation implements Listener {
         private boolean shouldSkipPacket(Player player, byte[] message) {
             // if they tried to hang prelude previously
             // just ignore
-            if (BukkitPlayerAdapter.didPlayerTryToHang(player))
+            if (PreludePlayerManager.didPlayerTryToHang(player))
                 return true;
 
             // a key implementation detail is that
@@ -165,14 +165,14 @@ public final class BaseImplementation implements Listener {
             // we just don't respond to their C2SPackets
             // they can keep on trying to verify (until another plugin/server)
             // kicks them
-            if (!BukkitPlayerAdapter.isPlayerVerified(player)) {
-                PreludePlayer.Info info = BukkitPlayerAdapter.adapt(adapter, player).getInfo();
+            if (!PreludePlayerManager.isPlayerVerified(player)) {
+                PreludePlayer.Info info = PreludePlayerManager.adapt(adapter, player).getInfo();
                 if (info == null)
                     return true; // they haven't sent info yet
 
                 // ids for Handshake and HandshakeAcknowledge
                 if (message[0] != 0 && message[0] != 1) {
-                    byte[] payload = BukkitPlayerAdapter.getPlayerPayload(player);
+                    byte[] payload = PreludePlayerManager.getPlayerPayload(player);
                     final BigInteger PUBLIC_N = getNForInfo(info);
 
                     if (PUBLIC_N == null) {
@@ -203,7 +203,7 @@ public final class BaseImplementation implements Listener {
                                     bao.write(TEMP_BUFFER);
 
                                 if (iterations == 10) {
-                                    BukkitPlayerAdapter.markPlayerTriedToHang(player);
+                                    PreludePlayerManager.markPlayerTriedToHang(player);
                                     return true; // they tried to hang prelude
                                 }
 
@@ -222,8 +222,8 @@ public final class BaseImplementation implements Listener {
 
                                 // hash checks out, we decrypted with public key successfully so client has
                                 // the proper private key, sent payload matches, they didn't try to
-                                BukkitPlayerAdapter.markPlayerVerified(player);
-                                BukkitPlayerAdapter.adapt(adapter, player).sendBytes(VERIF_ACKNOWLEDGE_ARR);
+                                PreludePlayerManager.markPlayerVerified(player);
+                                PreludePlayerManager.adapt(adapter, player).sendBytes(VERIF_ACKNOWLEDGE_ARR);
                                 return false;
                             } catch (IOException e) {
                                 if (plugin instanceof PreludePlugin)
@@ -249,8 +249,8 @@ public final class BaseImplementation implements Listener {
 
                             bao.write(encryptedBytes);
 
-                            BukkitPlayerAdapter.adapt(adapter, player).sendBytes(bao.toByteArray());
-                            BukkitPlayerAdapter.markSentPlayerVerification(player, bytes);
+                            PreludePlayerManager.adapt(adapter, player).sendBytes(bao.toByteArray());
+                            PreludePlayerManager.markSentPlayerVerification(player, bytes);
                         } catch (IOException e) {
                             if (plugin instanceof PreludePlugin)
                                 ((PreludePlugin) plugin).debug("Failed to send verification payload!");

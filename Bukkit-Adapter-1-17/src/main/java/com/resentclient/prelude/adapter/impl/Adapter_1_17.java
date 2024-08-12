@@ -32,7 +32,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
+import com.resentclient.prelude.adapter.PreludePlayerManager;
 import com.resentclient.prelude.adapter.VersionAdapter;
 import com.resentclient.prelude.api.mods.OffHand;
 import com.resentclient.prelude.api.mods.TotemUsedRenderer;
@@ -72,7 +72,7 @@ public final class Adapter_1_17 implements VersionAdapter {
 
             player.updateInventory();
 
-            BukkitPlayerAdapter.adapt(this, player).sendPacket(
+            PreludePlayerManager.adapt(this, player).sendPacket(
                     UpdateOffhandPreludeS2CPacket.builder()
                             .serializedItem(serialize(attemptedItemToSwap))
                             .canClientDisregardThis(true)
@@ -94,7 +94,7 @@ public final class Adapter_1_17 implements VersionAdapter {
         public void onResurrectEvent(EntityResurrectEvent event) throws IOException {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                totemMod.sendTotemPoppedEvent(BukkitPlayerAdapter.adapt(Adapter_1_17.this, player));
+                totemMod.sendTotemPoppedEvent(PreludePlayerManager.adapt(Adapter_1_17.this, player));
             }
         }
     }
@@ -113,7 +113,7 @@ public final class Adapter_1_17 implements VersionAdapter {
          * */
         @EventHandler(priority = EventPriority.MONITOR)
         public void onOffhandSwapViaKeybind(PlayerSwapHandItemsEvent event) throws IOException {
-            offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_17.this, event.getPlayer()),
+            offHand.sendOffhandEvent(PreludePlayerManager.adapt(Adapter_1_17.this, event.getPlayer()),
                     serialize(event.getOffHandItem()), true);
         }
 
@@ -146,7 +146,7 @@ public final class Adapter_1_17 implements VersionAdapter {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (!Objects.equals(player.getInventory().getItemInOffHand(), playerToOffhand.get(player))) {
                     try {
-                        offHand.sendOffhandEvent(BukkitPlayerAdapter.adapt(Adapter_1_17.this, player),
+                        offHand.sendOffhandEvent(PreludePlayerManager.adapt(Adapter_1_17.this, player),
                                 serialize(player.getInventory().getItemInOffHand()), false);
                     } catch (IOException e) {
                         // this shouldn't actually be thrown, this is for safety purposes

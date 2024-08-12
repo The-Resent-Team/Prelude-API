@@ -76,7 +76,7 @@ public interface VersionAdapter {
     default void equipSlotToOffhand(Player player, int slot) {
         if (!hasOffHandSupport()){
             try {
-                BukkitPlayerAdapter.adapt(this, player).sendPacket(
+                PreludePlayerManager.adapt(this, player).sendPacket(
                         UpdateOffhandPreludeS2CPacket.builder()
                                 .serializedItem("ItemStack{NULL}")
                                 .canClientDisregardThis(false)
@@ -91,7 +91,7 @@ public interface VersionAdapter {
         if (!hasOffHandSupport()){
             try {
                 // reset interact progress :D
-                BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(
+                PreludePlayerManager.adapt(this, activePlayer).sendPacket(
                         UpdateOffhandPreludeS2CPacket.builder()
                                 .serializedItem("ItemStack{NULL}")
                                 .canClientDisregardThis(false)

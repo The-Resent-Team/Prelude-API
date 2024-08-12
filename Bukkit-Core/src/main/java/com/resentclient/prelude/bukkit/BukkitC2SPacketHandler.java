@@ -22,12 +22,11 @@ import org.bukkit.entity.Player;
 import com.resentclient.prelude.api.Prelude;
 import com.resentclient.prelude.api.PreludePlayer;
 
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
+import com.resentclient.prelude.adapter.PreludePlayerManager;
 import com.resentclient.prelude.protocol.PreludeC2SPacketHandler;
 import com.resentclient.prelude.protocol.packets.c2s.*;
 import com.resentclient.prelude.protocol.packets.c2s.interactions.*;
 import com.resentclient.prelude.protocol.packets.s2c.*;
-import com.resentclient.prelude.protocol.packets.s2c.play.*;
 
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.ApiStatus;
@@ -52,10 +51,10 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
         PreludePlayer.Info info = new PreludePlayer.Info(pkt.getUsername(), pkt.getResentMajorVersion(),
                 pkt.getResentMinorVersion(), pkt.getResentBuildInteger(), pkt.getClientType(), pkt.doesClientClaimSelfIsRankedPlayer(), pkt.getEnabledMods());
 
-        BukkitPlayerAdapter.registerInfo(activePlayer, info);
+        PreludePlayerManager.registerInfo(activePlayer, info);
 
         try {
-            BukkitPlayerAdapter.adapt(PreludePlugin.getInstance().getAdapter(), activePlayer).sendPacket(
+            PreludePlayerManager.adapt(PreludePlugin.getInstance().getAdapter(), activePlayer).sendPacket(
                     ServerHandshakePreludeS2CPacket.builder()
                             .preludeMajorVersion(Prelude.MAJOR_VERSION)
                             .preludeMinorVersion(Prelude.MINOR_VERSION)
@@ -64,7 +63,7 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
                             .serverMinorVersion(VersionUtil.getServerBukkitVersion().getMinor())
                             .serverPatchVersion(VersionUtil.getServerBukkitVersion().getPatch())
                             .build());
-            BukkitPlayerAdapter.markSentServerHandshake(activePlayer);
+            PreludePlayerManager.markSentServerHandshake(activePlayer);
         } catch (IOException e) {
             // ?!?!?! how did this build of prelude-proto even get past tests wtf
         }
@@ -75,8 +74,8 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
         if (activePlayer == null)
             return;
 
-        if (!BukkitPlayerAdapter.isPlayerAccepted(activePlayer) && BukkitPlayerAdapter.haveSentServerHandshake(activePlayer))
-            BukkitPlayerAdapter.markPlayerAccepted(activePlayer);
+        if (!PreludePlayerManager.isPlayerAccepted(activePlayer) && PreludePlayerManager.haveSentServerHandshake(activePlayer))
+            PreludePlayerManager.markPlayerAccepted(activePlayer);
     }
 
     @Override

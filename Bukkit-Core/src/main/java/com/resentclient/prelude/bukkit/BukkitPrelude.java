@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
+import com.resentclient.prelude.adapter.PreludePlayerManager;
 import com.resentclient.prelude.api.Prelude;
 import com.resentclient.prelude.api.PreludePlayer;
 import com.resentclient.prelude.api.ResentMod;
@@ -54,7 +54,7 @@ public final class BukkitPrelude extends Prelude {
         if (player == null) {
             throw new IllegalStateException("An actor must be online! Attempted UUID: " + uuid.toString());
         }
-        return BukkitPlayerAdapter.adapt(PreludePlugin.getInstance().getAdapter(), player);
+        return PreludePlayerManager.adapt(PreludePlugin.getInstance().getAdapter(), player);
     }
 
     @Override

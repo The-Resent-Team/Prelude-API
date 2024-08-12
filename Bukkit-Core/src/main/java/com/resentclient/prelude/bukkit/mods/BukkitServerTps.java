@@ -19,7 +19,7 @@
 package com.resentclient.prelude.bukkit.mods;
 
 import com.resentclient.prelude.bukkit.PreludePlugin;
-import com.resentclient.prelude.adapter.BukkitPlayerAdapter;
+import com.resentclient.prelude.adapter.PreludePlayerManager;
 import com.resentclient.prelude.api.PreludePlayer;
 import com.resentclient.prelude.api.Prelude;
 import com.resentclient.prelude.api.mods.ServerTps;
@@ -37,7 +37,7 @@ public final class BukkitServerTps extends ServerTps {
     @Override
     public void sendServerTpsUpdate(PreludePlayer preludePlayer, double currentTps) throws IOException {
         super.sendServerTpsUpdate(preludePlayer, currentTps);
-        if (!BukkitPlayerAdapter.NON_RESENT_CLIENT_PLAYER.equals(preludePlayer))
+        if (!PreludePlayerManager.NON_RESENT_CLIENT_PLAYER.equals(preludePlayer))
             PreludePlugin.getInstance().debug("Dispatched ServerTpsUpdate to " + preludePlayer.getUsername());
     }
 
