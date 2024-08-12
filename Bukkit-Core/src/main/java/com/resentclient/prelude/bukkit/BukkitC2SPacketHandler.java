@@ -29,10 +29,14 @@ import com.resentclient.prelude.protocol.packets.c2s.interactions.*;
 import com.resentclient.prelude.protocol.packets.s2c.*;
 import com.resentclient.prelude.protocol.packets.s2c.play.*;
 
+import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 
+/**+
+ * @apiNote All methods in this class should be called after the player is cleared to use Prelude
+ * */
 public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
     private static Player activePlayer;
 
@@ -79,6 +83,10 @@ public class BukkitC2SPacketHandler implements PreludeC2SPacketHandler {
     public void handleEquipOffhand(EquipOffhandPreludeC2SPacket pkt) {
         if (activePlayer == null)
             return;
+
+        if (activePlayer.getOpenInventory().getType() == InventoryType.CRAFTING) // no inv open
+            if (pkt.getSlot() != activePlayer.getInventory().getHeldItemSlot())
+                return; // nice try bucko
 
         PreludePlugin.getInstance().getAdapter().equipSlotToOffhand(activePlayer, pkt.getSlot());
     }

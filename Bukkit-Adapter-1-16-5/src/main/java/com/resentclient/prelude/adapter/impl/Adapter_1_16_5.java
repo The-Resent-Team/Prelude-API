@@ -19,6 +19,7 @@
 
 package com.resentclient.prelude.adapter.impl;
 
+import com.resentclient.prelude.protocol.packets.s2c.play.UpdateOffhandPreludeS2CPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,8 +62,6 @@ public final class Adapter_1_16_5 implements VersionAdapter {
 
     @Override
     public void equipSlotToOffhand(Player player, int slot) {
-        if (true)
-            return; // TODO: validate inputs to prevent exploits
         try {
             ItemStack attemptedItemToSwap = player.getOpenInventory().getItem(slot);
             ItemStack offhand = player.getInventory().getItemInOffHand();
@@ -71,6 +70,13 @@ public final class Adapter_1_16_5 implements VersionAdapter {
             player.getOpenInventory().setItem(slot, offhand);
 
             player.updateInventory();
+
+            BukkitPlayerAdapter.adapt(this, player).sendPacket(
+                    UpdateOffhandPreludeS2CPacket.builder()
+                            .serializedItem(serialize(attemptedItemToSwap))
+                            .canClientDisregardThis(true)
+                            .build()
+            );
         } catch (Exception e) {
             // most likely someone trying to abuse prelude into spamming console
         }

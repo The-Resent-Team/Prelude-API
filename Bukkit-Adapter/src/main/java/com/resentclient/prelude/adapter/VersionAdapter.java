@@ -71,29 +71,34 @@ public interface VersionAdapter {
      * Attempts to put the item in specified slot into the offhand, and the offhand into specified slot
      *
      * @apiNote this will call an PlayerSwapHandItemsEvent
+     * @implNote
      */
     default void equipSlotToOffhand(Player player, int slot) {
-        try {
-            BukkitPlayerAdapter.adapt(this, player).sendPacket(
-                    UpdateOffhandPreludeS2CPacket.builder()
-                            .serializedItem("ItemStack{NULL}")
-                            .canClientDisregardThis(false)
-                            .build());
-        } catch (IOException e) {
-            // ???????????????????????????????
+        if (!hasOffHandSupport()){
+            try {
+                BukkitPlayerAdapter.adapt(this, player).sendPacket(
+                        UpdateOffhandPreludeS2CPacket.builder()
+                                .serializedItem("ItemStack{NULL}")
+                                .canClientDisregardThis(false)
+                                .build());
+            } catch (IOException e) {
+                // ???????????????????????????????
+            }
         }
     }
 
     default void interactWithOffhand(Player activePlayer, InteractWithOffhandPreludeC2SPacket.InteractType interactType) {
-        try {
-            // reset interact progress :D
-            BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(
-                    UpdateOffhandPreludeS2CPacket.builder()
-                            .serializedItem("ItemStack{NULL}")
-                            .canClientDisregardThis(false)
-                            .build());
-        } catch (IOException e) {
-            // ???????????????
+        if (!hasOffHandSupport()){
+            try {
+                // reset interact progress :D
+                BukkitPlayerAdapter.adapt(this, activePlayer).sendPacket(
+                        UpdateOffhandPreludeS2CPacket.builder()
+                                .serializedItem("ItemStack{NULL}")
+                                .canClientDisregardThis(false)
+                                .build());
+            } catch (IOException e) {
+                // ???????????????
+            }
         }
     }
 
