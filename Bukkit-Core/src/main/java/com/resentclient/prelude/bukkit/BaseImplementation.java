@@ -207,7 +207,7 @@ public final class BaseImplementation implements Listener {
                                     return true; // they tried to hang prelude
                                 }
 
-                                byte[] responseHash = AlgorithmRSA.cipherToBytes(AlgorithmRSA.decrypt(new BigInteger(bao.toByteArray()),
+                                byte[] responseHash = AlgorithmRSA.cipherToBytes(AlgorithmRSA.decrypt(AlgorithmRSA.bytesToCipher(bao.toByteArray()),
                                         PRELUDE_CLIENT_PUBLIC_E, PUBLIC_N));
                                 if (responseHash.length != 32) // sha 256 hash is 32 bytes
                                     return true;

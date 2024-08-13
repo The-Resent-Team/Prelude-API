@@ -47,7 +47,7 @@ public class AlgorithmRSA {
     }
 
     public static BigInteger bytesToCipher(byte[] bytes) {
-        return new BigInteger(bytes);
+        return new BigInteger(1, bytes);
     }
 
     public static byte[] cipherToBytes(BigInteger message) {
