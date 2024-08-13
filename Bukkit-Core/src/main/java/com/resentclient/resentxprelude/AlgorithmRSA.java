@@ -55,7 +55,7 @@ public class AlgorithmRSA {
     }
 
     public static BigInteger stringToCipher(String message) {
-        return new BigInteger(message.getBytes(StandardCharsets.US_ASCII));
+        return new BigInteger(1, message.getBytes(StandardCharsets.US_ASCII));
     }
 
     public static String cipherToString(BigInteger message) {
