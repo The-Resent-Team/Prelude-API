@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 /*
 * For verification (most skids won't be able to bypass this and potentially abuse Prelude),
-* We send a random message encrypted with the client's public key
+* We send a random message encrypted with the client's public key (note to future me: the message is 7 bytes, 7 + 25 (header) = 32, we can encrypt directly with RSA)
 * The client decrypts the message and returns "RESPREVER" + message + (sha256hash of the sent message encrypted with private key)
 * It then signs the message with the private key, which is verified
 * on the plugin to enable Prelude features :D
